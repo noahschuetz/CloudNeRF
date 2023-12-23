@@ -8,8 +8,11 @@ const headerStyle = {
     height: 64,
     paddingInline: 48,
     lineHeight: '64px',
-    backgroundColor: 'white',   
+    backgroundColor: 'white',
+    borderBottom: '1px solid #f0f0f0',  
 };
+
+
 
 const menuStyle = {
     flex: 1,
@@ -17,6 +20,7 @@ const menuStyle = {
     display: 'flex',
     justifyContent: 'flex-end',
     alignItems: 'center',
+    border: 'none',
 };
 
 const menuItems = [
@@ -33,20 +37,22 @@ const menuItems = [
 const HeaderComponent = () => {
     return (
         <Header style={headerStyle}>
-        <Image
-          width={40}
-          src="https://upload.wikimedia.org/wikipedia/commons/3/30/TU-Berlin-Logo.svg"
-          preview={false}
-          style={{paddingRight: 16}}
-        />
-        {/* font size schould be same as <p> */}
-        <h1 style={{fontSize: 14, margin: 0}}>CloudNeRF - Evaluating Neural Radiance Fields</h1>
-        <Menu
-          mode="horizontal"
-          defaultSelectedKeys={['static']}
-          items={menuItems}
-          style={menuStyle}       
-        />
+
+            <Image
+            width={40}
+            src="https://upload.wikimedia.org/wikipedia/commons/3/30/TU-Berlin-Logo.svg"
+            preview={false}
+            style={{paddingRight: 16}}
+            />
+
+            <h1 style={{fontSize: 14, margin: 0}}>CloudNeRF - Evaluating Neural Radiance Fields</h1>
+
+            <Menu
+            mode="horizontal"
+            defaultSelectedKeys={['static']}
+            items={menuItems}
+            style={menuStyle}       
+            />
 
       </Header>
     );

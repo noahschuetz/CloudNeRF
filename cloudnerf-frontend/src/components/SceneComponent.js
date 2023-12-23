@@ -14,8 +14,8 @@ const SceneComponent = () => {
                     <Button type="default" block style={{marginTop: '12px'}}>Adjust Scene</Button>
                 </Col>
             </Row>
-            <Row>
-                <canvas id="scene" style={{width: '100%', height: '100%'}}></canvas>
+            <Row style={{marginTop: '12px'}}>
+                <canvas id="scene" style={{width: '100%', height: '100%', border: '1px solid #f0f0f0'}}></canvas>
             </Row>
 
         </div>  
