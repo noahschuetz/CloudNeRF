@@ -4,7 +4,7 @@
 	"name": "CloudNeRF",
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "cloudnerf-nextjs",
-	"workspaceFolder": "/workspaces/CloudNeRF/${localWorkspaceFolderBasename}",
+	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/cloudnerf-nextjs",
 	"features": {
 		"ghcr.io/devcontainers/features/common-utils:2": {},
 		"ghcr.io/devcontainers-contrib/features/typescript:2": {}
@@ -17,7 +17,7 @@
 		3000
 	],
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "npm install -g npm && npm install",
+	"postCreateCommand": "rm -rf node_modules .next && npm install -g npm && npm install",
 	"customizations": {
 		"vscode": {
 			"extensions": [
@@ -48,10 +48,15 @@
 				"[javascript]": {
 					"editor.defaultFormatter": "biomejs.biome"
 				},
-				"javascript.updateImportsOnFileMove.enabled": "always"
+				"javascript.updateImportsOnFileMove.enabled": "always",
+				"files.watcherExclude": {
+					"**/.git/objects/**": true,
+					"**/.git/subtree-cache/**": true,
+					"**/node_modules/*/**": true
+				}
 			}
 		}
-	}
+	},
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "root"
 }
