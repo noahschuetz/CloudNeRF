@@ -1,0 +1,57 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/javascript-node-postgres
+{
+	"name": "CloudNeRF",
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "cloudnerf-nextjs",
+	"workspaceFolder": "/workspaces/CloudNeRF/${localWorkspaceFolderBasename}",
+	"features": {
+		"ghcr.io/devcontainers/features/common-utils:2": {},
+		"ghcr.io/devcontainers-contrib/features/typescript:2": {}
+	},
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	// "features": {},
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// This can be used to network with other containers or with the host.
+	"forwardPorts": [
+		3000
+	],
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": "npm install -g npm && npm install",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ckolkman.vscode-postgres",
+				"mhutchie.git-graph",
+				"mikestead.dotenv",
+				"ms-vscode-remote.remote-containers",
+				"ms-vscode-remote.remote-ssh",
+				"ms-vscode-remote.remote-ssh-edit",
+				"ms-vscode-remote.remote-wsl",
+				"ms-vscode.remote-explorer",
+				"ms-vsliveshare.vsliveshare",
+				"vscode-icons-team.vscode-icons",
+				"yzhang.markdown-all-in-one",
+				"biomejs.biome"
+			],
+			"settings": {
+				"[json]": {
+					"editor.defaultFormatter": "biomejs.biome"
+				},
+				"[typescript]": {
+					"editor.defaultFormatter": "biomejs.biome"
+				},
+				"[typescriptreact]": {
+					"editor.defaultFormatter": "biomejs.biome"
+				},
+				"typescript.updateImportsOnFileMove.enabled": "always",
+				"[javascript]": {
+					"editor.defaultFormatter": "biomejs.biome"
+				},
+				"javascript.updateImportsOnFileMove.enabled": "always"
+			}
+		}
+	}
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "root"
+}
