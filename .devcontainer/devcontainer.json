@@ -17,7 +17,7 @@
 		3000
 	],
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "rm -rf node_modules .next && npm install -g npm && npm install",
+	"postCreateCommand": "npm install -g npm && npm install",
 	"customizations": {
 		"vscode": {
 			"extensions": [
