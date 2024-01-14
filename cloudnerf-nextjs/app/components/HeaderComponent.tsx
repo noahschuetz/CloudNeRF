@@ -1,3 +1,5 @@
+"use client"
+
 import React from 'react';
 import  { Layout, Image, Menu } from 'antd';
 const { Header } = Layout;

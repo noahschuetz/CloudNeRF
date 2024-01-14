@@ -1,3 +1,5 @@
+"use client"
+
 import React from 'react';
 
 import InputComponent from './InputComponent';
@@ -19,7 +21,7 @@ const ContentComponent = () => {
     return (
         <Content style={contentStyle}>
         <Row>
-            <Col span={12} style={{paddingRIght: '24px'}}>
+            <Col span={12} style={{paddingRight: '24px'}}>
                 <InputComponent />
                 <ModelComponent />
             </Col>
