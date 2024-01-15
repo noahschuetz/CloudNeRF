@@ -22,7 +22,6 @@
 		8000,
 		5432
 	],
-	"initializeCommand": "cp .env.example .env",
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "npm install -g npm && npm install",
 	"customizations": {
