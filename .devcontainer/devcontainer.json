@@ -2,8 +2,11 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/javascript-node-postgres
 {
 	"name": "CloudNeRF",
-	"dockerComposeFile": "docker-compose.yml",
-	"service": "cloudnerf-nextjs",
+	"dockerComposeFile": [
+		"../docker-compose.yml",
+		"./docker-compose.dev.yml"
+	],
+	"service": "nextjs",
 	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}/cloudnerf-nextjs",
 	"features": {
 		"ghcr.io/devcontainers/features/common-utils:2": {},
@@ -15,7 +18,8 @@
 	// This can be used to network with other containers or with the host.
 	"forwardPorts": [
 		3000,
-		8000
+		8000,
+		5432
 	],
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "npm install -g npm && npm install",
