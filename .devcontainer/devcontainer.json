@@ -1,6 +1,7 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/javascript-node-postgres
 {
+
 	"name": "CloudNeRF",
 	"dockerComposeFile": [
 		"../docker-compose.yml",
@@ -21,6 +22,7 @@
 		8000,
 		5432
 	],
+	"initializeCommand": "cp .env.example .env",
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "npm install -g npm && npm install",
 	"customizations": {
