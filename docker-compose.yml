@@ -5,6 +5,8 @@ services:
     build: 
       context: ./cloudnerf-nextjs
       dockerfile: Dockerfile
+    ports:
+      - 3000:3000
 
     # AS SOON AS WE SETUP SUPABASE
     # Runs app on the same network as the database container, allows "forwardPorts" in devcontainer.json function.
@@ -186,6 +188,22 @@ services:
     volumes:
       - ./volumes/storage:/var/lib/storage:z
   
+  imgproxy:
+    container_name: supabase-imgproxy
+    image: darthsim/imgproxy:v3.8.0
+    healthcheck:
+      test: [ "CMD", "imgproxy", "health" ]
+      timeout: 5s
+      interval: 5s
+      retries: 3
+    environment:
+      IMGPROXY_BIND: ":5001"
+      IMGPROXY_LOCAL_FILESYSTEM_ROOT: /
+      IMGPROXY_USE_ETAG: "true"
+      IMGPROXY_ENABLE_WEBP_DETECTION: true
+    volumes:
+      - ./volumes/storage:/var/lib/storage:z
+  
   meta:
     container_name: supabase-meta
     image: supabase/postgres-meta:v0.75.0
@@ -277,9 +295,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-    depends_on:
-      vector:
-        condition: service_healthy
     command:
       - postgres
       - -c
