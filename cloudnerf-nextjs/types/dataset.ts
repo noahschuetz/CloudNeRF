@@ -1,10 +1,12 @@
-export interface Dataset{
-    name: string;
-    fetchUrl: URL;
-    dataPath: string;
-    type: DatasetType;
+export interface Dataset {
+	name: string;
+	fetchUrl: URL;
+	type: DatasetType;
 }
 
-export interface DatasetType{
-    name: string
+export enum DatasetType {
+	colmap = 0,
+	images = 1,
+	video = 2,
+	multiple_videos = 3,
 }

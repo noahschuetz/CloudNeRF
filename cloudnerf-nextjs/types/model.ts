@@ -1,7 +1,7 @@
-import {DatasetType} from "@/types/dataset"
+import { DatasetType } from "@/types/dataset";
 
-export interface Model{
-    name: string;
-    compatibleDatasetTypes: DatasetType[];
-    dockerfile: string;
+export interface Model {
+	name: string;
+	compatibleDatasetTypes: DatasetType[];
+	dockerfile: string;
 }
