@@ -72,7 +72,7 @@ services:
       DASHBOARD_PASSWORD: ${DASHBOARD_PASSWORD}
     volumes:
       # https://github.com/supabase/supabase/issues/12661
-      - ./volumes/api/kong.yml:/home/kong/temp.yml:ro
+      - ./supabase/api/kong.yml:/home/kong/temp.yml:ro
 
   auth:
     container_name: cloudnerf-auth
@@ -235,7 +235,7 @@ services:
       ENABLE_IMAGE_TRANSFORMATION: "true"
       IMGPROXY_URL: http://imgproxy:5001
     volumes:
-      - ./volumes/storage:/var/lib/storage:z
+      - ./supabase/storage:/var/lib/storage:z
 
   imgproxy:
     container_name: cloudnerf-imgproxy
@@ -251,7 +251,7 @@ services:
       IMGPROXY_USE_ETAG: "true"
       IMGPROXY_ENABLE_WEBP_DETECTION: ${IMGPROXY_ENABLE_WEBP_DETECTION}
     volumes:
-      - ./volumes/storage:/var/lib/storage:z
+      - ./supabase/storage:/var/lib/storage:z
 
   meta:
     container_name: cloudnerf-meta
@@ -287,7 +287,7 @@ services:
       # TODO: Allow configuring VERIFY_JWT per function. This PR might help: https://github.com/supabase/cli/pull/786
       VERIFY_JWT: "${FUNCTIONS_VERIFY_JWT}"
     volumes:
-      - ./volumes/functions:/home/deno/functions:Z
+      - ./supabase/functions:/home/deno/functions:Z
     command:
       - start
       - --main-service
@@ -368,17 +368,17 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXP: ${JWT_EXPIRY}
     volumes:
-      - ./volumes/db/realtime.sql:/docker-entrypoint-initdb.d/migrations/99-realtime.sql:Z
+      - ./supabase/db/realtime.sql:/docker-entrypoint-initdb.d/migrations/99-realtime.sql:Z
       # Must be superuser to create event trigger
-      - ./volumes/db/webhooks.sql:/docker-entrypoint-initdb.d/init-scripts/98-webhooks.sql:Z
+      - ./supabase/db/webhooks.sql:/docker-entrypoint-initdb.d/init-scripts/98-webhooks.sql:Z
       # Must be superuser to alter reserved role
-      - ./volumes/db/roles.sql:/docker-entrypoint-initdb.d/init-scripts/99-roles.sql:Z
+      - ./supabase/db/roles.sql:/docker-entrypoint-initdb.d/init-scripts/99-roles.sql:Z
       # Initialize the database settings with JWT_SECRET and JWT_EXP
-      - ./volumes/db/jwt.sql:/docker-entrypoint-initdb.d/init-scripts/99-jwt.sql:Z
+      - ./supabase/db/jwt.sql:/docker-entrypoint-initdb.d/init-scripts/99-jwt.sql:Z
       # PGDATA directory is persisted between restarts
-      - ./volumes/db/data:/var/lib/postgresql/data:Z
+      - ./supabase/db/data:/var/lib/postgresql/data:Z
       # Changes required for Analytics support
-      - ./volumes/db/logs.sql:/docker-entrypoint-initdb.d/migrations/99-logs.sql:Z
+      - ./supabase/db/logs.sql:/docker-entrypoint-initdb.d/migrations/99-logs.sql:Z
 
   vector:
     container_name: cloudnerf-vector
@@ -398,7 +398,7 @@ services:
       interval: 5s
       retries: 3
     volumes:
-      - ./volumes/logs/vector.yml:/etc/vector/vector.yml:ro
+      - ./supabase/logs/vector.yml:/etc/vector/vector.yml:ro
       - ${DOCKER_SOCKET_LOCATION}:/var/run/docker.sock:ro
 
     command: [ "--config", "etc/vector/vector.yml" ]
