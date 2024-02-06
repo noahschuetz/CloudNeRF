@@ -1,13 +1,12 @@
-import {Button, Col, Row, Modal} from 'antd';
 import React, { useState } from 'react';
-import SettingsPanel from '../SettingsPanel';
-import { TrainingSettings, RenderingSettings, CameraSettings } from '../types';
+import SettingsPanel from './SettingsPanel';
+import { Modal, Button } from 'antd';
+import { TrainingSettings, RenderingSettings, CameraSettings } from './types';
 
+const ParentComponent: React.FC = () => {
+    const [isSettingsVisible, setIsSettingsVisible] = useState(true);
 
-const InstantNGP = () => {
-    const [isSettingsVisible, setIsSettingsVisible] = useState(false);
-
-    // State hooks for each settings category
+  // State hooks for each settings category
   const [trainingSettings, setTrainingSettings] = useState<TrainingSettings>({
     trainEncoding: false,
     trainNetwork: false,
@@ -55,11 +54,11 @@ const InstantNGP = () => {
     setCameraSettings(newSettings);
   };
 
-
-    return (
-
-        <div style={{margin: '12px'}}>
-            <Modal
+  // The SettingsPanel component is rendered with all its props
+  return (
+    <div>
+        <button onClick={() => setIsSettingsVisible(true)}>Change Settings</button>
+        <Modal
             title="Change Settings"
             open={isSettingsVisible}
             onCancel={() => setIsSettingsVisible(false)}
@@ -74,21 +73,8 @@ const InstantNGP = () => {
                 onCameraSettingsChange={handleCameraSettingsChange}
             />
         </Modal>
+    </div>
+);
+};
 
-            <Row>
-                <Col span={12}>
-                    <p>Currently using default settings.</p>
-                </Col>
-                <Col span={12}>
-                    <Button onClick={() => setIsSettingsVisible(true)} type="default" block style={{marginTop: '12px'}}>Change Settings</Button>
-                </Col>
-            </Row>
-
-            <Button type="primary" block style={{marginTop: '12px'}}>Run InstantNGP</Button>         
-
-        </div>
-    );
-    
-}
-
-export default InstantNGP;
+export default ParentComponent;
