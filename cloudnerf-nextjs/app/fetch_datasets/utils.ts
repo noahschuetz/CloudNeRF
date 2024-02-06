@@ -39,35 +39,35 @@ export async function zipDataset(config: FetchDatasetConfig, path: string) {
 		"to",
 		`${tmpDir}/${datasetName}.zip`,
 	);
-	// const outputFile = createWriteStream(`${tmpDir}/${datasetName}.zip`);
-	// createReadStream
-	// const archive = archiver("zip", { zlib: { level: 9 } });
+	const outputFile = createWriteStream(`${tmpDir}/${datasetName}.zip`);
+	createReadStream
+	const archive = archiver("zip", { zlib: { level: 9 } });
 
-	// // add some listeners
-	// outputFile.on("close", () => {
-	// 	console.log(
-	// 		`${datasetName} resulted in ${Math.floor(
-	// 			archive.pointer() / 1024 / 1024,
-	// 		)} MB`,
-	// 	);
-	// 	console.log("archiver finalized");
-	// });
-	// // good practice to catch warnings (ie stat failures and other non-blocking errors)
-	// archive.on("warning", (err) => {
-	// 	if (err.code === "ENOENT") {
-	// 		console.log(err);
-	// 	} else {
-	// 		throw err;
-	// 	}
-	// });
-	// // good practice to catch this error explicitly
-	// archive.on("error", (err) => {
-	// 	throw err;
-	// });
+	// add some listeners
+	outputFile.on("close", () => {
+		console.log(
+			`${datasetName} resulted in ${Math.floor(
+				archive.pointer() / 1024 / 1024,
+			)} MB`,
+		);
+		console.log("archiver finalized");
+	});
+	// good practice to catch warnings (ie stat failures and other non-blocking errors)
+	archive.on("warning", (err) => {
+		if (err.code === "ENOENT") {
+			console.log(err);
+		} else {
+			throw err;
+		}
+	});
+	// good practice to catch this error explicitly
+	archive.on("error", (err) => {
+		throw err;
+	});
 
-	// archive.pipe(outputFile);
-	// archive.directory(`${tmpDir}/${path}`, `${datasetName}`);
-	// await archive.finalize();
+	archive.pipe(outputFile);
+	archive.directory(`${tmpDir}/${path}`, `${datasetName}`);
+	await archive.finalize();
 	return datasetName;
 }
 
