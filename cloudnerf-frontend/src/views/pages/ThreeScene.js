@@ -90,7 +90,7 @@ const ThreeScene = () => {
             rendererRef1.current.dispose();
             rendererRef2.current.dispose();
         };
-    }, []);
+    }, [windowHeight, windowWidth]);
   
     return (
         <>

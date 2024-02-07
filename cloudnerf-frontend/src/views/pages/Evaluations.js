@@ -1,6 +1,6 @@
 import React from 'react';
 // import TwoScenes from './ThreeScene';
-import {Row, Col} from 'antd';
+import {Row} from 'antd';
 import ThreeScene from './ThreeScene';
 
 function Evaluations() {
