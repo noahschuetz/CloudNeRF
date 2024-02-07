@@ -23,10 +23,14 @@ export function downloadDataset(config: FetchDatasetConfig) {
 	console.log(
 		`Starting download (cmd: ${config.cmd}, args: ${config.cdmArgs})`,
 	);
-	const downloadProcess = spawnSync(config.cmd, config.cdmArgs, {shell: true});
-	console.log("Download finished",
+	const downloadProcess = spawnSync(config.cmd, config.cdmArgs, {
+		shell: true, // for windows
+	});
+	console.log(
+		"Download finished",
 		`\nSTDERR: ${downloadProcess.stderr}`,
-		`\nSTDOUT: ${downloadProcess.stdout}`);
+		`\nSTDOUT: ${downloadProcess.stdout}`,
+	);
 	return downloadProcess;
 }
 
@@ -40,7 +44,7 @@ export async function zipDataset(config: FetchDatasetConfig, path: string) {
 		`${tmpDir}/${datasetName}.zip`,
 	);
 	const outputFile = createWriteStream(`${tmpDir}/${datasetName}.zip`);
-	createReadStream
+	createReadStream;
 	const archive = archiver("zip", { zlib: { level: 9 } });
 
 	// add some listeners
@@ -92,7 +96,9 @@ export async function uploadDatasetToSupabase(
 	console.log("Uploading to supabase bucket");
 	await supabaseServiceClient.storage
 		.from("datasets")
-		.upload(`${config.fetchId}/${datasetName}.zip`, content,  {duplex: "half"});
+		.upload(`${config.fetchId}/${datasetName}.zip`, content, {
+			duplex: "half",
+		});
 }
 
 export function cleanUp(config: FetchDatasetConfig) {
