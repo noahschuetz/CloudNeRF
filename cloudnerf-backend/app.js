@@ -1,5 +1,5 @@
 //native
-import { readFileSync, unlink } from "fs";
+import { mkdirSync, readFileSync, unlink } from "fs";
 //3rdparty
 import express from "express";
 import cors from "cors";
@@ -12,6 +12,11 @@ import {
 	uploadDatasetsToSupabase,
 } from "./fetch_datasets/utils.js";
 import { fetchDatasetConfigs } from "./fetch_datasets/configs.js";
+import {
+	loadDatasetIntoTemporaryDirectory,
+	runModel,
+} from "./run_models/utils.js";
+import { runModelsConfigs } from "./run_models/configs.js";
 
 config({ debug: true });
 
@@ -179,5 +184,13 @@ app.get("/datasets/fetch/:id", async (req, res) => {
 	const config = fetchDatasetConfigs.filter((c) => c.fetchId === fetchId)[0];
 	downloadDataset(config);
 	await uploadDatasetsToSupabase(config);
-	res.status(200).send("success")
+	res.status(200).send("success");
+});
+
+app.get("/run_model/:modelId/:datasetId", async (req, res) => {
+	const { modelId, datasetId } = req.params;
+	const config = runModelsConfigs.filter((c) => c.modelId === modelId)[0];
+	await loadDatasetIntoTemporaryDirectory(modelId, datasetId);
+	runModel(config);
+	res.status(200).send("success)");
 });
