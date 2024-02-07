@@ -1,4 +1,3 @@
-import { supabaseServerClient } from "@/supabase/server";
 import { assertValue } from "@/utils";
 import archiver from "archiver";
 import { spawnSync } from "child_process";
@@ -6,9 +5,6 @@ import {
 	createReadStream,
 	createWriteStream,
 	mkdirSync,
-	open,
-	readFile,
-	readFileSync,
 	rmdirSync,
 } from "fs";
 import { FetchDatasetConfig } from "./configs";
