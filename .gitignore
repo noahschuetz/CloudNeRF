@@ -3,4 +3,9 @@
 # dependencies
 /cloudnerf-frontend/node_modules
 /cloudnerf-backend/node_modules
-/cloudnerf-backend/supabase/
+
+# supabase
+supabase/db/data
+supabase/storage
+
+
