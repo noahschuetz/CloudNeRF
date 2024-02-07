@@ -3,7 +3,7 @@ import {createBrowserRouter, RouterProvider} from 'react-router-dom';
 import Navbar from './views/dashboard/Navbar';
 import Dashboard from './views/dashboard/Dashboard';
 import Datasets from './views/datasets/Datasets';
-import Models from './views/pages/Models';
+import Models from './views/models/Models';
 import Evaluations from './views/pages/Evaluations';
 import NewDataset from './views/datasets/NewDataset';
 import EditDataset from './views/datasets/EditDataset';
