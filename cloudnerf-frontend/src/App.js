@@ -1,8 +1,5 @@
 import {createBrowserRouter, RouterProvider} from 'react-router-dom';
 
-import { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
-
 import Navbar from './views/dashboard/Navbar';
 import Dashboard from './views/dashboard/Dashboard';
 import Datasets from './views/datasets/Datasets';
@@ -12,12 +9,14 @@ import NewDataset from './views/datasets/NewDataset';
 import EditDataset from './views/datasets/EditDataset';
 
 import {Layout} from 'antd';
+import FetchDatasets from './views/datasets/FetchDataset';
 const {Content} = Layout;
 
 const router = createBrowserRouter([
   {path: '/', element: <Dashboard />},    
   {path: '/datasets', element: <Datasets />},
   {path: '/datasets/new', element: <NewDataset />},
+  {path: '/datasets/fetch', element: <FetchDatasets />},
   {path: '/datasets/:id', element: <EditDataset />},
   {path: '/models', element: <Models />},
   {path: '/evaluations', element: <Evaluations />},

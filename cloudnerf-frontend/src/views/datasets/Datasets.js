@@ -1,11 +1,10 @@
 import {Row, Col, Button, List} from 'antd';
-import { useEffect, useState } from "react";
 
 import { useGetDatasetsQuery } from '../../redux/api';
 
 function Datasets() {
 
-    const { data, error, isLoading } = useGetDatasetsQuery();    
+    const { data } = useGetDatasetsQuery();    
     
     return (
         <>
@@ -17,8 +16,10 @@ function Datasets() {
                     display: 'flex',
                     textAlign: 'right',
                     justifyContent: 'flex-end',
-                    alignItems: 'center'
+                    alignItems: 'center',
+                    gap: "1rem"
                     }}>
+                    <Button type="primary" href='/datasets/fetch'>Fetch existing Datasets</Button>
                     <Button type="primary" href='/datasets/new'>New Dataset</Button>
                 </Col>
             </Row>
