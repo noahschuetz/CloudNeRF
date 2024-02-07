@@ -5,7 +5,7 @@ export const fetchDatasetConfigs = [
 	{
 		fetchId: "blender",
 		cmd: "docker",
-		cdmArgs: [
+		cmdArgs: [
 			"run",
 			"-v",
 			`${process.env.ROOT_DIR}/tmp/blender/:/workspace/`,

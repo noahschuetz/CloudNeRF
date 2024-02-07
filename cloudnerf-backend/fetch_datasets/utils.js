@@ -12,7 +12,7 @@ export function downloadDataset(config) {
 	console.log("Directory path:", tmpDir);
 
 	console.log(
-		`Starting download (cmd: ${config.cmd}, args: ${config.cdmArgs})`,
+		`Starting download (cmd: ${config.cmd}, args: ${config.cmdArgs})`,
 	);
 	const downloadProcess = spawnSync(config.cmd, config.cdmArgs, {
 		shell: true, // for windows
