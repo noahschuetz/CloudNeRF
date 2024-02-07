@@ -1,28 +1,20 @@
 import React from 'react';
-import { TrainingSettings, RenderingSettings, CameraSettings } from '../components/types'; // Adjust the import path as necessary
+import {RenderingSettings, CameraSettings } from '../components/types'; // Adjust the import path as necessary
 
 interface SettingsPanelProps {
-  trainingSettings: TrainingSettings;
   renderingSettings: RenderingSettings;
   cameraSettings: CameraSettings;
-  onTrainingSettingsChange: (settings: TrainingSettings) => void;
   onRenderingSettingsChange: (settings: RenderingSettings) => void;
   onCameraSettingsChange: (settings: CameraSettings) => void;
 }
 
 const SettingsPanel: React.FC<SettingsPanelProps> = ({
-  trainingSettings,
   renderingSettings,
   cameraSettings,
-  onTrainingSettingsChange,
   onRenderingSettingsChange,
   onCameraSettingsChange
 }) => {
 
-  const handleTrainingChange = (event: React.ChangeEvent<HTMLInputElement>, setting: keyof TrainingSettings) => {
-    const value = event.target.type === 'checkbox' ? event.target.checked : Number(event.target.value);
-    onTrainingSettingsChange({ ...trainingSettings, [setting]: value });
-  };
 
   const handleRenderingChange_input = (event: React.ChangeEvent<HTMLInputElement>, setting: keyof RenderingSettings) => {
     const value = event.target.type === 'checkbox' ? event.target.checked : Number(event.target.value);
@@ -41,35 +33,6 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({
 
   return (<>
     <div className='settingpanelcontainer' style={{padding: '20px'}}>
-      {/* Training Settings UI */}
-      <div style={{ marginBottom: '20px' }}>
-        <h3 style={{fontSize: '18px', color: 'red'}}>Training Settings</h3>
-
-        {/* Train Encoding */}
-        <div><label>Train Encoding: <input type="checkbox" checked={trainingSettings.trainEncoding} onChange={(e) => handleTrainingChange(e, 'trainEncoding')} /></label></div>
-        {/* Train Network */}
-        <div><label>Train Network: <input type="checkbox" checked={trainingSettings.trainNetwork} onChange={(e) => handleTrainingChange(e, 'trainNetwork')} /></label></div>
-        {/* Random Levels */}
-        <div><label>Random Levels: <input type="checkbox" checked={trainingSettings.randomLevels} onChange={(e) => handleTrainingChange(e, 'randomLevels')} /></label></div>
-        {/* Train Envmap */}
-        <div><label>Train Envmap: <input type="checkbox" checked={trainingSettings.trainEnvmap} onChange={(e) => handleTrainingChange(e, 'trainEnvmap')} /></label></div>
-        {/* Train Extrinsics */}
-        <div><label>Train Extrinsics: <input type="checkbox" checked={trainingSettings.trainExtrinsics} onChange={(e) => handleTrainingChange(e, 'trainExtrinsics')} /></label></div>
-        {/* Train Exposure */}
-        <div><label>Train Exposure: <input type="checkbox" checked={trainingSettings.trainExposure} onChange={(e) => handleTrainingChange(e, 'trainExposure')} /></label></div>
-        {/* Train Distortion */}
-        <div><label>Train Distortion: <input type="checkbox" checked={trainingSettings.trainDistortion} onChange={(e) => handleTrainingChange(e, 'trainDistortion')} /></label></div>
-        {/* Rays Per Batch */}
-        <div><label>Rays Per Batch: <input type="number" value={trainingSettings.raysPerBatch} onChange={(e) => handleTrainingChange(e, 'raysPerBatch')} /></label></div>
-        {/* Batch Size */}
-        <div><label>Batch Size: <input type="number" value={trainingSettings.batchSize} onChange={(e) => handleTrainingChange(e, 'batchSize')} /></label></div>
-        {/* Steps */}
-        <div><label>Steps: <input type="number" value={trainingSettings.steps} onChange={(e) => handleTrainingChange(e, 'steps')} /></label></div>
-        {/* Loss */}
-        <div><label>Loss: <input type="number" value={trainingSettings.loss} onChange={(e) => handleTrainingChange(e, 'loss')} /></label></div>
-        </div>
-      
-
         {/* Rendering Settings UI */}
         <div style={{ marginBottom: '20px' }}>
         <h3 style={{fontSize: '18px', color: 'red'}}>Rendering Settings</h3>

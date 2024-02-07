@@ -1,25 +1,11 @@
 import React, { useState } from 'react';
 import SettingsPanel from './SettingsPanel';
 import { Modal, Button } from 'antd';
-import { TrainingSettings, RenderingSettings, CameraSettings } from './types';
+import { RenderingSettings, CameraSettings } from './types';
 
 const ParentComponent: React.FC = () => {
     const [isSettingsVisible, setIsSettingsVisible] = useState(true);
 
-  // State hooks for each settings category
-  const [trainingSettings, setTrainingSettings] = useState<TrainingSettings>({
-    trainEncoding: false,
-    trainNetwork: false,
-    randomLevels: false,
-    trainEnvmap: false,
-    trainExtrinsics: false,
-    trainExposure: false,
-    trainDistortion: false,
-    raysPerBatch: 0,
-    batchSize: 0,
-    steps: 0,
-    loss: 0,
-  });
 
   const [renderingSettings, setRenderingSettings] = useState<RenderingSettings>({
     renderTime: 0,
@@ -41,11 +27,6 @@ const ParentComponent: React.FC = () => {
     autofocus: false,
   });
 
-  // Handlers for settings changes that update the respective states
-  const handleTrainingSettingsChange = (newSettings: TrainingSettings) => {
-    setTrainingSettings(newSettings);
-  };
-
   const handleRenderingSettingsChange = (newSettings: RenderingSettings) => {
     setRenderingSettings(newSettings);
   };
@@ -65,10 +46,8 @@ const ParentComponent: React.FC = () => {
             footer={null}
         >
             <SettingsPanel
-                trainingSettings={trainingSettings}
                 renderingSettings={renderingSettings}
                 cameraSettings={cameraSettings}
-                onTrainingSettingsChange={handleTrainingSettingsChange}
                 onRenderingSettingsChange={handleRenderingSettingsChange}
                 onCameraSettingsChange={handleCameraSettingsChange}
             />
