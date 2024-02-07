@@ -177,7 +177,7 @@ app.post(
 app.get("/datasets/fetch/:id", async (req, res) => {
 	const { id: fetchId } = req.params;
 	const config = fetchDatasetConfigs.filter((c) => c.fetchId === fetchId)[0];
-	console.log({ config });
 	downloadDataset(config);
-	uploadDatasetsToSupabase(config);
+	await uploadDatasetsToSupabase(config);
+	res.status(200).send("success")
 });

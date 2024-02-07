@@ -8,4 +8,7 @@
 supabase/db/data
 supabase/storage
 
+# tmp files
+tmp/
+
 
