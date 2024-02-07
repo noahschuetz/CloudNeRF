@@ -23,10 +23,10 @@ export function downloadDataset(config: FetchDatasetConfig) {
 	console.log(
 		`Starting download (cmd: ${config.cmd}, args: ${config.cdmArgs})`,
 	);
-	const downloadProcess = spawnSync(config.cmd, config.cdmArgs, {
-		shell: true, // for windows, maybe not necessary on ubuntu?
-	});
-	console.log("Download finished");
+	const downloadProcess = spawnSync(config.cmd, config.cdmArgs, {shell: true});
+	console.log("Download finished",
+		`\nSTDERR: ${downloadProcess.stderr}`,
+		`\nSTDOUT: ${downloadProcess.stdout}`);
 	return downloadProcess;
 }
 
@@ -82,21 +82,17 @@ export async function uploadDatasetToSupabase(
 	console.log("Bucket:", bucket);
 
 	console.log(
-		"Reading zip file:",
+		"Reading zip file into ReadStream:",
+		`${assertValue(tmpDirForDatasetFetching(config))}/${datasetName}.zip`,
+	);
+	const content = createReadStream(
 		`${assertValue(tmpDirForDatasetFetching(config))}/${datasetName}.zip`,
 	);
 
-	const content = readFileSync(
-		`${assertValue(tmpDirForDatasetFetching(config))}/${datasetName}.zip`,
-	);
-
-	// const content = "kjdsjkdsaj";
 	console.log("Uploading to supabase bucket");
 	await supabaseServiceClient.storage
 		.from("datasets")
-		.upload(`${config.fetchId}/${datasetName}.zip`, content, {
-			duplex: "half",
-		});
+		.upload(`${config.fetchId}/${datasetName}.zip`, content,  {duplex: "half"});
 }
 
 export function cleanUp(config: FetchDatasetConfig) {
