@@ -13,11 +13,13 @@ export const fetchDatasetConfigs: FetchDatasetConfig[] = [
 		cmd: "docker",
 		cdmArgs: [
 			"run",
-			`-v ${assertValue(process.env.ROOT_DIR)}/tmp/blender/:/workspace/`,
+			"-v",
+			`${assertValue(process.env.ROOT_DIR)}/tmp/blender/:/workspace/`,
 			"--rm",
 			"--shm-size=12gb",
 			"dromni/nerfstudio:1.0.0",
-			"ns-download-data blender",
+			"ns-download-data",
+			"blender",
 		],
 		datasetPaths: [
 			"data/blender/chair",
