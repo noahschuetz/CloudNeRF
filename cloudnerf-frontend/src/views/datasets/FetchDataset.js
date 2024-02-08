@@ -12,6 +12,7 @@ export default function FetchDatasets() {
 			<Row>
 				<Col>
 					<FetchButton id={"blender"} />
+					<FetchButton id={"nerfstudio"} />
 				</Col>
 			</Row>
 		</>
@@ -31,7 +32,7 @@ function FetchButton({ id }) {
 					: setDownloadState("error while downloading, check logs");
 			}}
 		>
-			Download Blender datasets | {downloadState}
+			Download {id} datasets | {downloadState}
 		</Button>
 	);
 }
