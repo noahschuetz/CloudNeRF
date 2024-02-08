@@ -1,10 +1,11 @@
 import {Row, Col, Button, List} from 'antd';
 
-import { useGetDatasetsQuery } from '../../redux/api';
+import { useGetDatasetsQuery, useDeleteDatasetMutation } from '../../redux/api';
 
 function Datasets() {
 
     const { data } = useGetDatasetsQuery(); 
+    const [deleteDataset] = useDeleteDatasetMutation();
     
     return (
         <>
@@ -31,7 +32,11 @@ function Datasets() {
                         dataSource={data}
                         renderItem={(item, index) => (
                             <List.Item
-                                // actions={[<a>edit</a>, <a>delete</a>]}
+                                actions={[
+                                    <a href={`/datasets/${item.name}`}>View</a>,
+                                    // <Button type="primary" href={`/datasets/${item.id}/edit`}>Edit</Button>,
+                                    <Button onClick={() => deleteDataset(item.name)}>Delete</Button>
+                                ]}
                             >
                                 <List.Item.Meta
                                     title={item.name + " -  Images: " + item.images}
