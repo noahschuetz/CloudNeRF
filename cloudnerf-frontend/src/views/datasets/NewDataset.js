@@ -2,7 +2,10 @@ import React, { useState } from "react";
 import { Row, Col, Button, Input, message, Upload, Steps } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
 
+import { useCreateDatasetMutation } from "../../redux/api";
+
 const { Dragger } = Upload;
+
 
 const steps = [
 	{
@@ -18,6 +21,11 @@ const steps = [
 
 function Datasets() {
 	const [name, setName] = useState("");
+	const [description, setDescription] = useState("");
+	const [compatible_models, setCompatibleModels] = useState([]);
+	const [images, setImages] = useState(0);
+
+	const [createDataset] = useCreateDatasetMutation();
 
 	const props = {
 		name: "file",
@@ -70,6 +78,24 @@ function Datasets() {
 		title: item.title,
 	}));
 
+	const handleCreateDataset = async () => {
+		const dataset = {
+			name: name,
+			description: description,
+			compatible_models: compatible_models,
+			images: images,
+		};
+		const { data, error } = await createDataset(dataset);
+		if (error) {
+			console.log("error", error);
+			message.error("Error creating dataset");
+		} else {
+			console.log("dataset", data);
+			message.success("Dataset created");
+			next();
+		}
+	}
+
 	return (
 		<>
 			<Row>
@@ -95,11 +121,19 @@ function Datasets() {
 					}}
 				>
 					{current === 0 && (
-						<Input
-							placeholder="Name"
-							value={name}
-							onChange={(e) => setName(e.target.value)}
-						/>
+						<>
+							<Input
+								placeholder="Name"
+								value={name}
+								onChange={(e) => setName(e.target.value)}
+							/><br/>
+							<Input
+								placeholder="Description"
+								value={description}
+								onChange={(e) => setDescription(e.target.value)}
+							/>
+						</>
+
 					)}
 					{current === 1 && (
 						<Dragger {...props}>
@@ -137,7 +171,7 @@ function Datasets() {
 					}}
 				>
 					{current === 0 && (
-						<Button type="primary" onClick={() => next()}>
+						<Button type="primary" onClick={handleCreateDataset}>
 							Create Dataset
 						</Button>
 					)}

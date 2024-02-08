@@ -4,7 +4,7 @@ import { useGetDatasetsQuery } from '../../redux/api';
 
 function Datasets() {
 
-    const { data } = useGetDatasetsQuery();    
+    const { data } = useGetDatasetsQuery(); 
     
     return (
         <>
@@ -34,9 +34,10 @@ function Datasets() {
                                 // actions={[<a>edit</a>, <a>delete</a>]}
                             >
                                 <List.Item.Meta
-                                    title={item.name}
-                                    description="Standart Dataset"
+                                    title={item.name + " -  Images: " + item.images}
+                                    description={item.description + " - Compatible models: " + item.compatible_models.join(", ")}
                                 />
+                                
                             </List.Item>
                         )}
                     />

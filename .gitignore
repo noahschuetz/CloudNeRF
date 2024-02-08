@@ -5,7 +5,8 @@
 /cloudnerf-backend/node_modules
 
 # supabase
-supabase/db/data
-supabase/storage
+supabase/
 
 
+.env
+/cloudnerf-backend/.env
