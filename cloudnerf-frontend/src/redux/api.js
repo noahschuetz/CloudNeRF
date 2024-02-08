@@ -17,6 +17,15 @@ export const api = createApi({
 			query: (id) => `datasets/${id}/images`,
 			providesTags: (result, error, id) => [{ type: "datasets", id }],
 		}),
+		//infos as parameters in url of the query
+		createDataset: build.mutation({
+			query: (body) => ({
+				url: `datasets/${body.name}+${body.description}+${body.compatible_models}+${body.images}`,
+				method: "POST",
+				body,
+			}),
+			invalidatesTags: ["datasets"],
+		}),
 	}),
 });
 
@@ -24,5 +33,6 @@ export const {
 	useGetDatasetsQuery,
 	useGetDatasetQuery,
 	useGetDatasetImagesQuery,
+	useCreateDatasetMutation,
 } = api;
 export default api;
