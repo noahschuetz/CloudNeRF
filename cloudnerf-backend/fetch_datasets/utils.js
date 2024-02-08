@@ -1,6 +1,6 @@
 import { spawnSync } from "child_process";
 import { readFileSync, mkdirSync, readdirSync, rmdirSync } from "fs";
-import { supabase } from "../supabase.js";
+import { supabase } from "../supabaseClient.js";
 import path from "path";
 
 export const datasetFetchIds = ["blender"];
