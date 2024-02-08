@@ -26,6 +26,13 @@ export const api = createApi({
 			}),
 			invalidatesTags: ["datasets"],
 		}),
+		deleteDataset: build.mutation({
+			query: (id) => ({
+				url: `datasets/${id}`,
+				method: "DELETE",
+			}),
+			invalidatesTags: ["datasets"],
+		}),
 		updateImages: build.mutation({
 			query: (id) => ({
 				url: `datasets/${id}/images`,
@@ -41,6 +48,8 @@ export const {
 	useGetDatasetQuery,
 	useGetDatasetImagesQuery,
 	useCreateDatasetMutation,
+	useDeleteDatasetMutation,
 	useUpdateImagesMutation,
+
 } = api;
 export default api;

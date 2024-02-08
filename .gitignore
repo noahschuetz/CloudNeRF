@@ -1,12 +1,12 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+.gitignore
 
 # dependencies
 /cloudnerf-frontend/node_modules
 /cloudnerf-backend/node_modules
 
 # supabase
-supabase/db/data
-supabase/storage
+supabase/
 
 # tmp files
 tmp/

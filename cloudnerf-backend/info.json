@@ -1,0 +1,6 @@
+{
+    "name": "bear",
+    "description": "Custom dataset by Team 1 - Project AWT Evaluation of Neural Radiance Fields - TU Berlin",
+    "compatible_models": ["nerf", "instantNGP"],
+    "images": 166
+  }

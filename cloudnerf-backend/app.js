@@ -87,7 +87,6 @@ app.get("/datasets", async (req, res) => {
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-// parameter are name, description, compatible_models, images
 app.post("/datasets/", async (req, res) => {
 	console.log("req.body", req.body);
 	const { name, description, compatible_models, images } = req.body;
@@ -121,6 +120,61 @@ app.get("/datasets/:id", (req, res) => {
 			console.log("error", error);
 			res.status(500).send("error");
 		});
+});
+
+app.delete("/datasets/:id", async (req, res) => {
+	try {
+		console.log('hier');
+		const { id } = req.params;
+
+		const { data: images, error: imagesError } = await supabase.storage
+			.from("datasets")
+			.list(`${id}/images`);
+
+		if (imagesError) {
+			console.log("error", imagesError);
+			res.status(500).send("error");
+		}
+
+		console.log("images", images);
+
+		// delete images
+		for (const image of images) {
+			const { data, error } = await supabase.storage
+				.from("datasets")
+				.remove(`${id}/images/${image.name}`);
+			if (error) {
+				console.log("error", error);
+				res.status(500).send("error");
+			}
+			console.log("datasets", data);
+		}
+
+		// delete info.json
+		const { data, error } = await supabase.storage
+			.from("datasets")
+			.remove([`${id}/info.json`]);
+		if (error) {
+			console.log("error", error);
+			res.status(500).send("error");
+		}
+
+		// delete transforms.json
+		const { data: transforms, error: transformsError } = await supabase.storage
+			.from("datasets")
+			.remove([`${id}/transforms.json`]);
+		if (transformsError) {
+			console.log("error", transformsError);
+			res.status(500).send("error");
+		}
+
+		res.send('datasets deleted successfully');
+	
+	} catch (error) {
+		console.error('Error deleting dataset:', error.message);
+		res.status(500).json({ error: 'Internal server error' });
+  	}
+
 });
 
 app.get("/datasets/:id/images", (req, res) => {
@@ -222,7 +276,6 @@ app.post("/datasets/:id/images", upload.array("file", 400), async (req, res) => 
 
 });
 
-//update info.json file with images count
 app.patch("/datasets/:id/images", async (req, res) => {
 	const { id } = req.params;
 	const { data: images, error: imagesError } = await supabase.storage
@@ -266,37 +319,7 @@ app.patch("/datasets/:id/images", async (req, res) => {
 	res.send(updatedInfo);
 });
 
-// 	supabase.storage
-// 		.from("datasets")
-// 		.upload(filelocation, fileContent, { contentType: req.files[0].mimetype })
-// 		.then(({ data, error }) => {
-// 			if (error) {
-// 				console.log("error", error);
-// 				res.status(500).send("error");
-// 			}
-// 			console.log("datasets", data);
-// 			res.send(data);
-
-// 			// Clean up uploaded file from the server
-// 			unlink(req.files[0].path, (err) => {
-// 				if (err) {
-// 					console.error("Error cleaning up file:", err);
-// 				} else {
-// 					console.log("File deleted successfully:", req.files[0].path);
-// 				}
-// 			});
-// 		})
-// 		.catch((error) => {
-// 			console.log("error", error);
-// 			res.status(500).send("error");
-// 		});
-// 	},
-// );
-
-app.post(
-	"/datasets/:id/transforms",
-	upload.array("file", 400),
-	(req, res, next) => {
+app.post("/datasets/:id/transforms", upload.array("file", 400),	(req, res, next) => {
 		const { id } = req.params;
 
 		console.log("files", req.files);
