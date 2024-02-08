@@ -1,5 +1,5 @@
 import { spawnSync } from "child_process";
-import { readFileSync, mkdirSync, readdirSync, rmdirSync, chownSync, chmodSync } from "fs";
+import { readFileSync, mkdirSync, readdirSync, rmdirSync, chmodSync } from "fs";
 import { supabase } from "../supabaseClient.js";
 import path from "path";
 
