@@ -1,6 +1,6 @@
 import { mkdirSync, writeFileSync } from "fs";
 import path from "path";
-import { supabase } from "../supabase.js";
+import { supabase } from "../supabaseClient.js";
 import { spawnSync } from "child_process";
 
 export async function loadDatasetIntoTemporaryDirectory(modelId, datasetId) {

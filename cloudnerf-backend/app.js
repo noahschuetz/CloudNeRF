@@ -1,10 +1,13 @@
 //native
 import { mkdirSync, readFileSync, unlink } from "fs";
+
 //3rdparty
 import express from "express";
 import cors from "cors";
 import multer from "multer";
+import bodyParser from "body-parser";
 import { config } from "dotenv";
+
 //own
 import { supabase } from "./supabaseClient.js";
 import {
@@ -81,22 +84,24 @@ app.get("/datasets", async (req, res) => {
   	}
 });
 
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
 // parameter are name, description, compatible_models, images
 app.post("/datasets/", async (req, res) => {
-	console.log("req.params", req.params);
 	console.log("req.body", req.body);
-	// const { name, description, compatible_models, images } = req.body;
-	// const { data, error } = await supabase.storage
-	// 	.from("datasets")
-	// 	.upload(`${name}/info.json`, JSON.stringify(req.body), {
-	// 		contentType: "application/json",
-	// 	});
-	// if (error) {
-	// 	console.log("error", error);
-	// 	res.status(500).send("error");
-	// }
-	// console.log("datasets", data);
-	// res.send(data);
+	const { name, description, compatible_models, images } = req.body;
+	const { data, error } = await supabase.storage
+		.from("datasets")
+		.upload(`${name}/info.json`, JSON.stringify(req.body), {
+			contentType: "application/json",
+		});
+	if (error) {
+		console.log("error", error);
+		res.status(500).send("error");
+	}
+	console.log("datasets", data);
+	res.send(data);
 });
 
 app.get("/datasets/:id", (req, res) => {
@@ -138,47 +143,155 @@ app.get("/datasets/:id/images", (req, res) => {
 		});
 });
 
-app.post(
-	"/datasets/:id/images",
-	upload.array("file", 400),
-	(req, res, next) => {
-		const { id } = req.params;
-		console.log("id", id);
+app.post("/datasets/:id/images", upload.array("file", 400), async (req, res) => {
+	const { id } = req.params;
+	console.log("id", id);
+	console.log("files", req.files);
 
-		console.log("files", req.files);
+	// now upload to supabase
+	const filelocation = `${id}/images/${req.files[0].originalname}`;
 
-		// now upload to supabase
-		const filelocation = `${id}/images/${req.files[0].originalname}`;
+	console.log("filelocation", filelocation);
+	const fileContent = readFileSync(req.files[0].path);
 
-		console.log("filelocation", filelocation);
-		const fileContent = readFileSync(req.files[0].path);
-
-		supabase.storage
+	try {
+		const { data, error } = await supabase.storage
 			.from("datasets")
-			.upload(filelocation, fileContent, { contentType: req.files[0].mimetype })
-			.then(({ data, error }) => {
-				if (error) {
-					console.log("error", error);
-					res.status(500).send("error");
-				}
-				console.log("datasets", data);
-				res.send(data);
+			.upload(filelocation, fileContent, { contentType: req.files[0].mimetype });
 
-				// Clean up uploaded file from the server
-				unlink(req.files[0].path, (err) => {
-					if (err) {
-						console.error("Error cleaning up file:", err);
-					} else {
-						console.log("File deleted successfully:", req.files[0].path);
-					}
-				});
-			})
-			.catch((error) => {
-				console.log("error", error);
-				res.status(500).send("error");
-			});
-	},
-);
+		if (error) {
+			console.log("error", error);
+			res.status(500).send("error");
+		}
+		console.log("datasets", data);
+
+		// // get how many images are in the folder
+		// const filelocationImages = `${id}/images`;
+		// const { data: images, error: imagesError } = await supabase.storage
+		// 	.from("datasets")
+		// 	.list(filelocationImages);
+			
+		// if (imagesError) {
+		// 	console.log("error", imagesError);
+		// 	res.status(500).send("error");
+		// }
+		// console.log("images", images);
+
+		// // update the info.json file with the new about of images
+		// const { data: fileInfo, error: fileError } = await supabase.storage.from('datasets').download(`${id}/info.json`);
+
+		// if (fileError) {
+		// 	console.error(`Error downloading info.json from folder ${id}:`, fileError);
+		// }
+
+		// // Convert Blob to string
+		// const fileInfoText = await fileInfo.text();
+
+		// // Parse the JSON data
+		// const infoData = JSON.parse(fileInfoText);
+
+		// // Update the images count
+		// infoData.images = images.length;
+
+		// // Update the updated info.json file
+		// const { data: updatedInfo, error: updatedInfoError } = supabase.storage
+		// 	.from("datasets")
+		// 	.update(`${id}/info.json`, JSON.stringify(infoData), {
+		// 		contentType: "application/json",
+		// 	});
+
+		// if (updatedInfoError) {
+		// 	console.log("error", updatedInfoError);
+		// 	res.status(500).send("error");
+		// }
+
+		res.send(data);
+		
+		// Clean up uploaded file from the server
+		unlink(req.files[0].path, (err) => {
+			if (err) {
+				console.error("Error cleaning up file:", err);
+			} else {
+				console.log("File deleted successfully:", req.files[0].path);
+			}
+		});
+	} catch (error) {
+		console.log("error", error);
+		res.status(500).send("error");
+	}
+
+});
+
+//update info.json file with images count
+app.patch("/datasets/:id/images", async (req, res) => {
+	const { id } = req.params;
+	const { data: images, error: imagesError } = await supabase.storage
+		.from("datasets")
+		.list(`${id}/images`);
+		
+	if (imagesError) {
+		console.log("error", imagesError);
+		res.status(500).send("error");
+	}
+	console.log("images", images);
+
+	// update the info.json file with the new about of images
+	const { data: fileInfo, error: fileError } = await supabase.storage.from('datasets').download(`${id}/info.json`);
+
+	if (fileError) {
+		console.error(`Error downloading info.json from folder ${id}:`, fileError);
+	}
+
+	// Convert Blob to string
+	const fileInfoText = await fileInfo.text();
+
+	// Parse the JSON data
+	const infoData = JSON.parse(fileInfoText);
+
+	// Update the images count
+	infoData.images = images.length;
+
+	// Update the updated info.json file
+	const { data: updatedInfo, error: updatedInfoError } = supabase.storage
+		.from("datasets")
+		.update(`${id}/info.json`, JSON.stringify(infoData), {
+			contentType: "application/json",
+		});
+
+	if (updatedInfoError) {
+		console.log("error", updatedInfoError);
+		res.status(500).send("error");
+	}
+
+	res.send(updatedInfo);
+});
+
+// 	supabase.storage
+// 		.from("datasets")
+// 		.upload(filelocation, fileContent, { contentType: req.files[0].mimetype })
+// 		.then(({ data, error }) => {
+// 			if (error) {
+// 				console.log("error", error);
+// 				res.status(500).send("error");
+// 			}
+// 			console.log("datasets", data);
+// 			res.send(data);
+
+// 			// Clean up uploaded file from the server
+// 			unlink(req.files[0].path, (err) => {
+// 				if (err) {
+// 					console.error("Error cleaning up file:", err);
+// 				} else {
+// 					console.log("File deleted successfully:", req.files[0].path);
+// 				}
+// 			});
+// 		})
+// 		.catch((error) => {
+// 			console.log("error", error);
+// 			res.status(500).send("error");
+// 		});
+// 	},
+// );
 
 app.post(
 	"/datasets/:id/transforms",

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Row, Col, Button, Input, message, Upload, Steps } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
 
-import { useCreateDatasetMutation } from "../../redux/api";
+import { useCreateDatasetMutation, useUpdateImagesMutation } from "../../redux/api";
 
 const { Dragger } = Upload;
 
@@ -26,6 +26,7 @@ function Datasets() {
 	const [images, setImages] = useState(0);
 
 	const [createDataset] = useCreateDatasetMutation();
+	const [updateImages] = useUpdateImagesMutation();
 
 	const props = {
 		name: "file",
@@ -94,6 +95,11 @@ function Datasets() {
 			message.success("Dataset created");
 			next();
 		}
+	}
+
+	const handleFinishUpload = () => {
+		updateImages(name);
+		next();
 	}
 
 	return (
@@ -176,8 +182,8 @@ function Datasets() {
 						</Button>
 					)}
 					{current === 1 && (
-						<Button type="primary" onClick={() => next()}>
-							Next
+						<Button type="primary" onClick={handleFinishUpload}>
+							Finish Upload
 						</Button>
 					)}
 					{current === 2 && (
