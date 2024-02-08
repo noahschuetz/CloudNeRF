@@ -7,14 +7,14 @@ export const runModelsConfigs = [
 			"--gpus",
 			"all",
 			"-v",
-			`${process.env.ROOT_DIR}/tmp/instantngp/data/:/workspace/`,
+			`${process.env.ROOT_DIR}/tmp/instantngp/data/:/workspace/data/`,
             "--rm",
             "--shm-size=12gb",
             "dromni/nerfstudio:1.0.0",
             "ns-train",
             "instant-ngp",
             "--data",
-            "/workspace/"
+            "/workspace/data"
 		],
 	},
 ];
