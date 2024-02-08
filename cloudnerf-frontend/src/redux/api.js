@@ -8,6 +8,9 @@ export const api = createApi({
 		getDatasets: build.query({
 			query: () => "datasets",
 			providesTags: ["datasets"],
+			// map the name of results to the name, label, and value fields
+			transformResponse: (response) => response.map((dataset) => ({ ...dataset, label: dataset.name, value: dataset.name })),
+
 		}),
 		getDataset: build.query({
 			query: (id) => `datasets/${id}`,
