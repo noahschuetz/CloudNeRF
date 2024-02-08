@@ -7,7 +7,7 @@ export const fetchDatasetConfigs = [
 		cmd: "docker",
 		cmdArgs: [
 			"run",
-			"-v",
+			"--volume",
 			`${process.env.ROOT_DIR}/tmp/blender/:/workspace/`,
 			"--rm",
 			"--shm-size=12gb",
@@ -58,4 +58,25 @@ export const fetchDatasetConfigs = [
 			],
 		],
 	},
+	{
+		fetchId: "nerfstudio",
+		cmd: "docker",
+		cmdArgs: [
+			"run",
+			"--volume",
+			`${process.env.ROOT_DIR}/tmp/nerfstudio/:/workspace/`,
+			"--rm",
+			"--shm-size=12gb",
+			"dromni/nerfstudio:1.0.0",
+			"ns-download-data",
+			"nerfstudio",
+			"--capture-name",
+			"all"
+		],
+		datasetPaths: [
+			"bww_entrance",
+			"data/nerfstudio/bww_entrance/images",
+			"data/nerfstudio/bww_entrance/transforms.json"
+		]
+	}
 ];
