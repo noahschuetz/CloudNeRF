@@ -96,10 +96,10 @@ const ThreeScene = () => {
         <>
             <Row>
                 <Col span={12}>
-                    <div ref={sceneRef1} style={{marginRight: '5%'}}/>
+                    <div ref={sceneRef1} style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}} />
                 </Col>
                 <Col span={12}>
-                    <div ref={sceneRef2} style={{marginLeft: '5%'}} />
+                    <div ref={sceneRef2} style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}} />
                 </Col>
             </Row>
         </>
