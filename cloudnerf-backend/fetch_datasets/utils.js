@@ -1,5 +1,5 @@
 import { spawnSync } from "child_process";
-import { readFileSync, mkdirSync, readdirSync, rmdirSync } from "fs";
+import { readFileSync, mkdirSync, readdirSync, rmdirSync, chownSync, chmodSync } from "fs";
 import { supabase } from "../supabaseClient.js";
 import path from "path";
 
@@ -9,13 +9,14 @@ export function downloadDataset(config) {
 	console.log("Creating temporary directory for dataset download");
 	const tmpDir = tmpDirForDatasetFetching(config);
 	mkdirSync(tmpDir, { recursive: true });
+	chmodSync(tmpDir, 0o777)
 	console.log("Directory path:", tmpDir);
 
 	console.log(
 		`Starting download (cmd: ${config.cmd}, args: ${config.cmdArgs})`,
 	);
-	const downloadProcess = spawnSync(config.cmd, config.cdmArgs, {
-		shell: true, // for windows
+	const downloadProcess = spawnSync(config.cmd, config.cmdArgs, {
+		shell: true // windows
 	});
 	console.log(
 		"Download finished",
@@ -31,6 +32,9 @@ export async function uploadDatasetsToSupabase(config) {
 		public: true,
 	});
 	console.log("Bucket:", bucket);
+	if (bucket.error){
+		console.log(bucket.error.message)
+	}
 
 	for (const dsPath of config.datasetPaths) {
 		const dataDir = path.join(tmpDirForDatasetFetching(config), dsPath[1]);
@@ -41,7 +45,6 @@ export async function uploadDatasetsToSupabase(config) {
 		const bucketLocation = dsPath[0];
 		const bucketDataSubdir = dsPath[1].split("/").at(-1);
 		console.log("Uploading images");
-		console.log(bucketDataSubdir);
 		for (const filename of readdirSync(dataDir)) {
 			const content = readFileSync(path.join(dataDir, filename));
 			await supabase.storage
