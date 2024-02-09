@@ -387,8 +387,10 @@ app.get("/models/docker_images", async (req, res) => {
 		"images",
 		"--format",
 		"json",
-	]).stdout;
-	const dockerImagesInfo = JSON.parse(dockerImagesInfoJson);
+	]).stdout.toString();
+	const dockerImagesInfo = JSON.parse(
+		`[${dockerImagesInfoJson.split("\n").slice(0, -1).join(",")}]`,
+	);
 	const dockerImages = dockerImagesInfo.map((di) => di.Repository);
 	res.json(dockerImages);
 });
