@@ -7,14 +7,13 @@ import {
 import { useEffect, useState } from "react";
 
 export default function Models() {
-	const { data } = useGetDatasetsQuery();
-	const { data: dockerImages } = useGetDockerImagesQuery();
+	const { data: datasets } = useGetDatasetsQuery();
+	const { data: dockerImages, error } = useGetDockerImagesQuery();
 	const [selectedDataset, setSelectedDataset] = useState(undefined);
 	const [selectedModel, setSelectedModel] = useState(undefined);
-
 	const { data: modelConfigs } = useGetRunModelConfigsQuery();
 
-	const models = modelConfigs.map((mc) => ({
+	const models = modelConfigs?.map((mc) => ({
 		...mc,
 		name: mc.modelId,
 		label: mc.displayName,
@@ -29,33 +28,43 @@ export default function Models() {
 		console.log(res);
 	};
 
+	const handleInstallModel = async (modelId) => {
+		const res = await fetch(`http://localhost:5000/models/install/${modelId}`);
+		console.log({ installModelRes: res });
+	};
+
 	return (
 		<>
 			<Row>
 				<Col span={24}>
 					<h1>Models</h1>
-
-					<List
-						bordered
-						dataSource={models}
-						renderItem={(item, index) => (
-							<List.Item
-								actions={[
-									dockerImages ? (dockerImages.include(item.dockerImage) ? (
-										<p>already installed, cool</p>
-									) : (
-										<Button>Install</Button>
-									)) : <Spin />,
-									// <RunModelButton modelId={item.name} datasetId={datasetId} />
-								]}
-							>
-								<List.Item.Meta
-									title={item.name}
-									description={item.description}
-								/>
-							</List.Item>
-						)}
-					/>
+					{modelConfigs && dockerImages ? (
+						<List
+							bordered
+							dataSource={models}
+							renderItem={(item, index) => (
+								<List.Item
+									actions={[
+										dockerImages.includes(item.dockerImage) ? (
+											<p>already installed, cool</p>
+										) : (
+											<Button onClick={() => handleInstallModel(item.modelId)}>
+												Install
+											</Button>
+										),
+										// <RunModelButton modelId={item.name} datasetId={datasetId} />
+									]}
+								>
+									<List.Item.Meta
+										title={item.name}
+										description={item.description}
+									/>
+								</List.Item>
+							)}
+						/>
+					) : (
+						<Spin />
+					)}
 				</Col>
 			</Row>
 
@@ -67,7 +76,7 @@ export default function Models() {
 						placeholder="Select a dataset"
 						style={{ width: 120, marginLeft: 10, marginRight: 10 }}
 						onChange={(value) => setSelectedDataset(value)}
-						options={data}
+						options={datasets}
 					/>
 					Model:
 					<Select
