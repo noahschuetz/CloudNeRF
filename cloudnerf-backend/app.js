@@ -374,10 +374,32 @@ app.get("/datasets/fetch/:id", async (req, res) => {
 	res.status(200).send("success");
 });
 
-app.get("/run_model/:modelId/:datasetId", async (req, res) => {
+app.get("models/run/:modelId/:datasetId", async (req, res) => {
 	const { modelId, datasetId } = req.params;
 	const config = runModelsConfigs.filter((c) => c.modelId === modelId)[0];
 	await loadDatasetIntoTemporaryDirectory(modelId, datasetId);
 	runModel(config);
 	res.status(200).send("success)");
+});
+
+app.get("/models/docker_images", async (req, res) => {
+	const dockerImagesInfoJson = spawnSync("docker", [
+		"images",
+		"--format",
+		"json",
+	]).stdout;
+	const dockerImagesInfo = JSON.parse(dockerImagesInfoJson);
+	const dockerImages = dockerImagesInfo.map((di) => di.Repository);
+	res.json(dockerImages);
+});
+
+app.get("/models/configs", async (req, res) => {
+	res.json(runModelsConfigs);
+});
+
+app.get("/models/install/:modelId", async (req, res) => {
+	const { modelId } = req.params;
+	const config = runModelsConfigs.filter((c) => c.modelId === modelId)[0];
+	installModel(config);
+	res.status(200).send("success");
 });
