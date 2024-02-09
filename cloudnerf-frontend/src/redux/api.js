@@ -55,7 +55,19 @@ export const api = createApi({
 		getRunModelConfigs: build.query({
 			query: () => "models/configs/",
 			providesTags: (result, error, id) => [{ type: "models", id }],
-		})
+		}),
+		getResults: build.query({
+			query: () => `results/`,
+			providesTags: (result, error, id) => [{ type: "results", id }],
+		}),
+		getResultMeshUrl: build.query({
+			query: (id) => `results/${id}/meshUrl`,
+			providesTags: (result, error, id) => [{ type: "results", id }],
+			transformResponse: (response, meta) => {
+				return response.signedUrl;
+			},
+
+		}),
 	}),
 });
 
@@ -67,6 +79,8 @@ export const {
 	useDeleteDatasetMutation,
 	useUpdateImagesMutation,
 	useGetDockerImagesQuery,
-	useGetRunModelConfigsQuery
-} = api;
+	useGetRunModelConfigsQuery,
+	useGetResultsQuery,
+	useGetResultMeshQuery,
+	} = api;
 export default api;

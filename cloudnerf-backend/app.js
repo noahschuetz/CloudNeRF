@@ -22,6 +22,7 @@ import {
 } from "./run_models/utils.js";
 import { runModelsConfigs } from "./run_models/configs.js";
 import { spawnSync } from "child_process";
+import { log } from "console";
 
 config({ debug: true });
 
@@ -404,4 +405,126 @@ app.get("/models/install/:modelId", async (req, res) => {
 	const config = runModelsConfigs.filter((c) => c.modelId === modelId)[0];
 	installModel(config);
 	res.status(200).send("success");
+});
+
+
+app.get("/results", async (req, res) => {
+	const { data, error } = await supabase.storage.from("results").list();
+
+	if (error) {
+		console.log("error", error);
+		res.status(500).send("error");
+	}
+
+	//get info.json from each folder
+	const allInfo = [];
+
+	for (const folder of data) {
+		const { data: fileInfo, error: fileError } = await supabase.storage
+			.from("results")
+			.download(`${folder.name}/info.json`);
+
+		if (fileError) {
+			console.error(
+				`Error downloading info.json from folder ${folder.name}:`,
+				fileError,
+			);
+			continue;
+		}
+
+		// Convert Blob to string
+		const fileInfoText = await fileInfo.text();
+
+		// Parse the JSON data
+		const infoData = JSON.parse(fileInfoText);
+
+		// Push info data into the array
+		allInfo.push(infoData);
+	}
+
+	// Send the combined info data as a response
+	res.json(allInfo);
+
+
+});
+
+// app.get("/results/:id/mesh", async (req, res) => {
+
+// 	const { id } = req.params;
+	
+// 	//get mesh file name
+// 	const { data, error } = await supabase.storage.from("results").list(`${id}/mesh`)
+
+// 	//provide the url to the mesh file
+// 	res.json(data[0].name);
+
+
+
+// 	// //download the mesh file
+// 	// const { data: mesh, error: meshError } = await supabase.storage
+// 	// 	.from("results")
+// 	// 	.download(`${id}/mesh/${data[0].name}`);
+
+// 	// log("mesh", mesh);
+
+// 	// if (meshError) {
+// 	// 	console.error(
+// 	// 		`Error downloading mesh from folder ${id}:`,
+// 	// 		meshError,
+// 	// 	);
+// 	// 	res.status(500).send("error");
+// 	// }
+
+// 	// // Convert Blob to string
+// 	// const meshText = await mesh.text();
+
+	
+
+// });
+
+app.get("/results/:id/meshUrl", async (req, res) => {
+
+	const { id } = req.params;
+	log("id", id);
+
+	const { data: resultlist, resultlisterror } = await supabase.storage.from("results").list(`${id}/mesh`)
+
+	if (resultlisterror) {
+		// console.log("error", resultlisterror);
+		res.status(500).send("error");
+	}
+
+	const filename = resultlist[0].name;
+	// log("filename", filename);
+
+	const pathtofile = `/test_name/mesh/${filename}`;
+	// log("pathtofile", pathtofile);
+
+	// const { data, error } = await supabase.storage.from("results").createSignedUrl('/test_name/mesh/placeholder.fbx', 60)
+	const { data, error } = await supabase.storage.from("results").createSignedUrl(pathtofile, 60)
+
+	if (error) {
+		// console.log("error", error);
+		res.status(500).send("error");
+	}
+	console.log("results", data);
+
+	res.send(data);
+
+});
+
+app.post("/results/", async (req, res) => {
+	const {name} = req.body;
+	const { data, error } = await supabase.storage
+		.from("results")
+		.upload(`${name}/info.json`, JSON.stringify(req.body), {
+			contentType: "application/json",
+		});
+	if (error) {
+		console.log("error", error);
+		res.status(500).send("error");
+	}
+
+	console.log("results", data);
+	res.send(data);
 });

@@ -2,8 +2,15 @@ import React, { useRef, useEffect } from 'react';
 import { Row, Col } from 'antd';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 
-const ThreeScene = () => {
+//theeScene component with meshurl as prop
+const ThreeScene = (prop) => {
+
+    const meshurl = prop.meshurl;
+
+
+
     const sceneRef1 = useRef(null);
     const sceneRef2 = useRef(null);
 
@@ -12,9 +19,13 @@ const ThreeScene = () => {
 
     const windowWidth = (window.innerWidth*0.8)/2;
     const windowHeight = (window.innerHeight*0.8)/2;
-
   
     useEffect(() => {
+
+        console.log('meshurl', meshurl);
+
+        
+
 
         const scene1 = new THREE.Scene();        
         const camera1 = new THREE.PerspectiveCamera(75, windowWidth / windowHeight, 0.1, 1000);
@@ -28,12 +39,31 @@ const ThreeScene = () => {
         
         // Set up controls
         const controls1 = new OrbitControls(camera1, renderer1.domElement);
+
+        // Create an ambient light to provide global illumination
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Soft white light
+        scene1.add(ambientLight);
+
+        if (meshurl) {
+            const loader = new FBXLoader();
+            loader.load(meshurl, function (object) {
+                // Assuming you have a scene already initialized
+                console.log('object', object);
+                // give the object a the same material
+                object.traverse(child => {
+                    if (child.isMesh) {
+                        child.material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+                    }
+                });
+                scene1.add(object);
+            });
+        }
         
         // Set up a simple cube
         const geometry1 = new THREE.BoxGeometry();
         const material1 = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
         const cube1 = new THREE.Mesh(geometry1, material1);
-        scene1.add(cube1);
+        // scene1.add(cube1);
         
         controls1.update()
 
