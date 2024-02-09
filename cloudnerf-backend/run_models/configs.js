@@ -25,7 +25,8 @@ export const runModelsConfigs = [
 		modelId: "neus",
 		displayName: "Neus",
 		dockerImage: "dromni/nerfstudio",
-		installCmd: "",
+		installCmd: "docker",
+		installCmdArgs: ["run", "--rm", "dromni/nerfstudio:1.0.0", "ls"],
 		runCmd: "docker",
 		runCmdArgs: [
 			"run",
@@ -46,7 +47,8 @@ export const runModelsConfigs = [
 		modelId: "nerfacto",
 		displayName: "Nerfacto",
 		dockerImage: "dromni/nerfstudio",
-		installCmd: "",
+		installCmd: "docker",
+		installCmdArgs: ["run", "--rm", "dromni/nerfstudio:1.0.0", "ls"],
 		runCmd: "docker",
 		runCmdArgs: [
 			"run",
@@ -67,7 +69,8 @@ export const runModelsConfigs = [
 		modelId: "mipnerf",
 		displayName: "Mip-NeRF",
 		dockerImage: "dromni/nerfstudio",
-		installCmd: "",
+		installCmd: "docker",
+		installCmdArgs: ["run", "--rm", "dromni/nerfstudio:1.0.0", "ls"],
 		runCmd: "docker",
 		runCmdArgs: [
 			"run",
@@ -88,7 +91,15 @@ export const runModelsConfigs = [
 		modelId: "kplanes",
 		displayName: "K-Planes",
 		dockerImage: "cloudnerf/kplanes",
-		installCmd: "",
+		installCmd: "docker",
+		installCmdArgs: [
+			"build",
+			"-t",
+			"cloudnerf/kplanes",
+			"-f",
+			"Dockerfile.kplanes",
+			`${process.env.ROOT_DIR}/run_models/dockerfiles/`,
+		],
 		runCmd: "docker",
 		runCmdArgs: [
 			"run",
@@ -109,7 +120,15 @@ export const runModelsConfigs = [
 		modelId: "kplanes-dynamic",
 		displayName: "K-Planes (for dynamic scenes)",
 		dockerImage: "cloudnerf/kplanes",
-		installCmd: "",
+		installCmd: "docker",
+		installCmdArgs: [
+			"build",
+			"-t",
+			"cloudnerf/kplanes",
+			"-f",
+			`${process.env.ROOT_DIR}/run_models/dockerfiles/Dockerfile.kplanes`,
+			`${process.env.ROOT_DIR}/run_models/dockerfiles/`,
+		],
 		runCmd: "docker",
 		runCmdArgs: [
 			"run",
