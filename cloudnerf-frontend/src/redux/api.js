@@ -9,8 +9,13 @@ export const api = createApi({
 			query: () => "datasets",
 			providesTags: ["datasets"],
 			// map the name of results to the name, label, and value fields
-			transformResponse: (response) => response.map((dataset) => ({ ...dataset, label: dataset.name, value: dataset.name })),
-
+			transformResponse: (response, meta) => {
+				return response.map((dataset) => ({
+					...dataset,
+					label: dataset.name,
+					value: dataset.name,
+				}));
+			},
 		}),
 		getDataset: build.query({
 			query: (id) => `datasets/${id}`,
@@ -23,7 +28,7 @@ export const api = createApi({
 		//infos as parameters in url of the query
 		createDataset: build.mutation({
 			query: (body) => ({
-				url: `datasets/`,
+				url: "datasets/",
 				method: "POST",
 				body,
 			}),
@@ -43,6 +48,14 @@ export const api = createApi({
 			}),
 			invalidatesTags: ["datasets"],
 		}),
+		getDockerImages: build.query({
+			query: () => "models/docker_images/",
+			providesTags: (result, error, id) => [{ type: "models", id }],
+		}),
+		getRunModelConfigs: build.query({
+			query: () => "models/configs/",
+			providesTags: (result, error, id) => [{ type: "models", id }],
+		})
 	}),
 });
 
@@ -53,6 +66,7 @@ export const {
 	useCreateDatasetMutation,
 	useDeleteDatasetMutation,
 	useUpdateImagesMutation,
-
+	useGetDockerImagesQuery,
+	useGetRunModelConfigsQuery
 } = api;
 export default api;
