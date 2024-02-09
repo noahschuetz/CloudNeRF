@@ -1,0 +1,3 @@
+FROM dromni/nerfstudio:1.0.0
+
+RUN pip install kplanes-nerfstudio
