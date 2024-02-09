@@ -71,12 +71,14 @@ export const fetchDatasetConfigs = [
 			"ns-download-data",
 			"nerfstudio",
 			"--capture-name",
-			"all"
+			"all",
 		],
 		datasetPaths: [
-			"bww_entrance",
-			"data/nerfstudio/bww_entrance/images",
-			"data/nerfstudio/bww_entrance/transforms.json"
-		]
-	}
+			[
+				"bww_entrance",
+				"data/nerfstudio/bww_entrance/images",
+				"data/nerfstudio/bww_entrance/transforms.json",
+			],
+		],
+	},
 ];
