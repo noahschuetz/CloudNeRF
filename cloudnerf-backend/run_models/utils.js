@@ -25,7 +25,7 @@ export async function loadDatasetIntoTemporaryDirectory(modelId, datasetId) {
 
 	// images download
 	const assetDir = datasetContents.filter((d) => d.id === null)[0].name;
-	mkdirSync(path.join(tmpDir, assetDir), { recursive: true });
+	mkdirSync(path.join(tmpDir, "data", assetDir), { recursive: true });
 
 	const { data: assetDirContents } = await supabase.storage
 		.from("datasets")
