@@ -3,6 +3,7 @@ import { Row, Col } from 'antd';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+import { PLYLoader } from 'three/examples/jsm/loaders/PLYLoader';
 
 //theeScene component with meshurl as prop
 const ThreeScene = (prop) => {
@@ -64,6 +65,12 @@ const ThreeScene = (prop) => {
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Soft white light
         scene1.add(ambientLight);
 
+        // Create a directional light to simulate sunlight
+        const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.5);
+        directionalLight1.position.set(0, 1, 0);
+        scene1.add(directionalLight1);
+
+
         if (leftmeshurl && leftfiletype === 'fbx') {
             const loader = new FBXLoader();
             loader.load(leftmeshurl, function (object) {
@@ -71,6 +78,25 @@ const ThreeScene = (prop) => {
                 object.scale.set(leftscale.x, leftscale.y, leftscale.z);
                 object.rotation.set(leftrotation.x, leftrotation.y, leftrotation.z);
                 scene1.add(object); 
+            });
+        }
+
+        if (leftmeshurl && leftfiletype === 'ply') {
+            const loader = new PLYLoader();
+            loader.load(leftmeshurl, function (geometry) {
+                geometry.computeVertexNormals();
+                var material = new THREE.MeshStandardMaterial({
+                    color: 0xffffff,
+                    roughness: 0.5,
+                    metalness: 0.5,
+                });                    
+                var mesh = new THREE.Mesh(geometry, material);
+                mesh.castShadow = true; // Enable shadow casting
+                mesh.receiveShadow = true; // Enable shadow receiving
+
+                mesh.scale.set(leftscale.x, leftscale.y, leftscale.z);
+                mesh.rotation.set(leftrotation.x, leftrotation.y, leftrotation.z);
+                scene1.add(mesh);
             });
         }
         
@@ -105,6 +131,11 @@ const ThreeScene = (prop) => {
         const ambientLight2 = new THREE.AmbientLight(0xffffff, 0.5); // Soft white light
         scene2.add(ambientLight2);
 
+        // Create a directional light to simulate sunlight
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        directionalLight.position.set(0, 1, 0);
+        scene2.add(directionalLight);
+
         if (rightmeshurl && rightfiletype === 'fbx') {
             const loader = new FBXLoader();
             loader.load(rightmeshurl, function (object) {
@@ -112,6 +143,28 @@ const ThreeScene = (prop) => {
                 object.rotation.set(rightrotation.x, rightrotation.y, rightrotation.z);
                 scene2.add(object); 
             });
+        }
+
+        if (rightmeshurl && rightfiletype === 'ply') {
+            const loader = new PLYLoader();
+            loader.load(rightmeshurl, function (geometry) {
+                geometry.computeVertexNormals();
+                var material = new THREE.MeshStandardMaterial({
+                    color: 0xffffff,
+                    roughness: 0.5,
+                    metalness: 0.5,
+                });                    
+                var mesh = new THREE.Mesh(geometry, material);
+                mesh.castShadow = true; // Enable shadow casting
+                mesh.receiveShadow = true; // Enable shadow receiving
+
+                mesh.scale.set(rightscale.x, rightscale.y, rightscale.z);
+
+                // rotate the mesh upside down
+                mesh.rotation.set(rightrotation.x, rightrotation.y, rightrotation.z);
+
+                scene2.add(mesh);
+            });             
         }
         
         // Set up a simple cube
