@@ -13,6 +13,8 @@ function Evaluations() {
 
     const [leftSceneMeshUrl, setLeftSceneMeshUrl] = useState("");
     const [rightSceneMeshUrl, setRightSceneMeshUrl] = useState("");
+    const [leftSceneItem, setLeftSceneItem] = useState("");
+    const [rightSceneItem, setRightSceneItem] = useState("");
     const handleDownloadClick = (name) => {
 
         // http://localhost:5000/results/${name}/meshUrl provides the mesh url
@@ -36,7 +38,10 @@ function Evaluations() {
         })
 
     }
-    const handleViewInLeftPanel = (name) => {
+    const handleViewInLeftPanel = (item) => {
+
+        const name = item.name;
+        console.log(item);
 
         // http://localhost:5000/results/${name}/meshUrl provides the mesh url
         fetch(`http://localhost:5000/results/${name}/meshUrl`)
@@ -52,14 +57,17 @@ function Evaluations() {
             const url = data.signedUrl;
 
             setLeftSceneMeshUrl(url);
+            setLeftSceneItem(item);
             
             /// Render ThreeScene component with meshurl as prop and append to three-scene-container
-            const scene = <ThreeScene meshurl = {url} />;
+            const scene = <ThreeScene leftmeshurl = {url} leftitem = {item} rightmeshurl = {rightSceneMeshUrl} rightitem = {rightSceneItem} />;
             const container = document.getElementById('three-scene-container');
 
             // Ensure that container is not null before attempting to append
             if (container) {
-            ReactDOM.render(scene, container);
+                // Clear the container before appending
+                ReactDOM.unmountComponentAtNode(container);
+                ReactDOM.render(scene, container);
             } else {
             console.error("Container element not found.");
             }
@@ -67,7 +75,10 @@ function Evaluations() {
         })
 
     }
-    const handleViewInRightPanel = (name) => {
+    const handleViewInRightPanel = (item) => {
+
+        const name = item.name;
+        console.log(item);
 
         // http://localhost:5000/results/${name}/meshUrl provides the mesh url
         fetch(`http://localhost:5000/results/${name}/meshUrl`)
@@ -78,9 +89,25 @@ function Evaluations() {
             return response.json();
         })
         .then(data => {
+            
+            console.log(data);
             const url = data.signedUrl;
 
-            setRightSceneMeshUrl(url);     
+            setRightSceneMeshUrl(url);
+            setRightSceneItem(item);
+            
+            /// Render ThreeScene component with meshurl as prop and append to three-scene-container
+            const scene = <ThreeScene leftmeshurl = {leftSceneMeshUrl} leftitem = {leftSceneItem} rightmeshurl = {url} rightitem = {item} />;
+            const container = document.getElementById('three-scene-container');
+
+            // Ensure that container is not null before attempting to append
+            if (container) {
+                // Clear the container before appending
+                ReactDOM.unmountComponentAtNode(container);
+                ReactDOM.render(scene, container);
+            } else {
+            console.error("Container element not found.");
+            }
             
             
 
@@ -108,11 +135,11 @@ function Evaluations() {
                                     >Download</Button>,
                                     <Button
                                         type='primary'
-                                        onClick={() => handleViewInLeftPanel(item.name)}
+                                        onClick={() => handleViewInLeftPanel(item)}
                                     >View in left panel</Button>,
                                     <Button
                                         type='primary'
-                                        onClick={() => handleViewInRightPanel(item.name)}
+                                        onClick={() => handleViewInRightPanel(item)}
                                     >View in right panel</Button>			
                                 ]}
                             >
