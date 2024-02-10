@@ -48,6 +48,10 @@ export const api = createApi({
 			}),
 			invalidatesTags: ["datasets"],
 		}),
+		getFetchDatasetConfigs: build.query({
+			query: () => "datasets/fetch/configs",
+			providesTags: (result, error, id) => [{ type: "fetch-datasets", id }],
+		}),
 		getDockerImages: build.query({
 			query: () => "models/docker_images/",
 			providesTags: (result, error, id) => [{ type: "models", id }],
@@ -82,5 +86,6 @@ export const {
 	useGetRunModelConfigsQuery,
 	useGetResultsQuery,
 	useGetResultMeshQuery,
+	useGetFetchDatasetConfigsQuery
 	} = api;
 export default api;
