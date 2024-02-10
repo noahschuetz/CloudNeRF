@@ -65,6 +65,8 @@ export const runModelsConfigs = [
 			"nerfacto",
 			"--pipeline.model.predict-normals",
 			"True",
+			"--timestamp",
+			"latest",
 			"--data",
 			"/workspace/data",
 		],
@@ -80,6 +82,10 @@ export const runModelsConfigs = [
 			"dromni/nerfstudio:1.0.0",
 			"ns-export",
 			"poisson",
+			"--load-config",
+			"outputs/data/nerfacto/latest/config.yml",
+			"--output-dir",
+			"results"
 		],
 	},
 	{
