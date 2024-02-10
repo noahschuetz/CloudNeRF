@@ -3,6 +3,7 @@ import { mkdirSync, readFileSync, unlink } from "fs";
 
 //3rdparty
 import express from "express";
+import morgan from "morgan";
 import cors from "cors";
 import multer from "multer";
 import bodyParser from "body-parser";
@@ -24,7 +25,7 @@ import { runModelsConfigs } from "./run_models/configs.js";
 import { spawnSync } from "child_process";
 import { log } from "console";
 
-config({ debug: true });
+config();
 
 const app = express();
 const port = 5000;
@@ -34,6 +35,8 @@ app.use(
 		origin: "http://localhost:3000",
 	}),
 );
+
+app.use(morgan("short"));
 
 const upload = multer({ dest: "uploads/" });
 
@@ -46,17 +49,17 @@ app.listen(port, "0.0.0.0", () => {
 });
 
 app.get("/datasets", async (req, res) => {
-	try {
-		const { data, error } = await supabase.storage.from("datasets").list();
+	const { data, error } = await supabase.storage.from("datasets").list();
 
-		if (error) {
-			console.log("error", error);
-			res.status(500).send("error");
-		}
+	if (error) {
+		console.log("error", error);
+		res.status(500).send("error");
+	}
 
-		const allInfo = [];
+	const allInfo = [];
 
-		for (const dataset of data) {
+	for (const dataset of data) {
+		try {
 			const { data: fileInfo, error: fileError } = await supabase.storage
 				.from("datasets")
 				.download(`${dataset.name}/info.json`);
@@ -77,14 +80,14 @@ app.get("/datasets", async (req, res) => {
 
 			// Push info data into the array
 			allInfo.push(infoData);
+		} catch (error) {
+			console.error("Error downloading info from folders:", error.message);
+			console.error("Erronous dataset is", dataset.name)
 		}
-
-		// Send the combined info data as a response
-		res.json(allInfo);
-	} catch (error) {
-		console.error("Error downloading info from folders:", error.message);
-		res.status(500).json({ error: "Internal server error" });
 	}
+
+	// Send the combined info data as a response
+	res.json(allInfo);
 });
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -131,7 +134,7 @@ app.delete("/datasets/:id", async (req, res) => {
 
 		const { data: images, error: imagesError } = await supabase.storage
 			.from("datasets")
-			.list(`${id}/images`);
+			.list(`${id}/images`, {limit: 10000});
 
 		if (imagesError) {
 			console.log("error", imagesError);
@@ -375,7 +378,7 @@ app.get("/datasets/fetch/:id", async (req, res) => {
 	res.status(200).send("success");
 });
 
-app.get("models/run/:modelId/:datasetId", async (req, res) => {
+app.get("/models/run/:modelId/:datasetId", async (req, res) => {
 	const { modelId, datasetId } = req.params;
 	const config = runModelsConfigs.filter((c) => c.modelId === modelId)[0];
 	await loadDatasetIntoTemporaryDirectory(modelId, datasetId);
@@ -406,7 +409,6 @@ app.get("/models/install/:modelId", async (req, res) => {
 	installModel(config);
 	res.status(200).send("success");
 });
-
 
 app.get("/results", async (req, res) => {
 	const { data, error } = await supabase.storage.from("results").list();
@@ -444,21 +446,17 @@ app.get("/results", async (req, res) => {
 
 	// Send the combined info data as a response
 	res.json(allInfo);
-
-
 });
 
 // app.get("/results/:id/mesh", async (req, res) => {
 
 // 	const { id } = req.params;
-	
+
 // 	//get mesh file name
 // 	const { data, error } = await supabase.storage.from("results").list(`${id}/mesh`)
 
 // 	//provide the url to the mesh file
 // 	res.json(data[0].name);
-
-
 
 // 	// //download the mesh file
 // 	// const { data: mesh, error: meshError } = await supabase.storage
@@ -478,16 +476,15 @@ app.get("/results", async (req, res) => {
 // 	// // Convert Blob to string
 // 	// const meshText = await mesh.text();
 
-	
-
 // });
 
 app.get("/results/:id/meshUrl", async (req, res) => {
-
 	const { id } = req.params;
 	log("id", id);
 
-	const { data: resultlist, resultlisterror } = await supabase.storage.from("results").list(`${id}/mesh`)
+	const { data: resultlist, resultlisterror } = await supabase.storage
+		.from("results")
+		.list(`${id}/mesh`);
 
 	if (resultlisterror) {
 		// console.log("error", resultlisterror);
@@ -501,7 +498,9 @@ app.get("/results/:id/meshUrl", async (req, res) => {
 	log("pathtofile", pathtofile);
 
 	// const { data, error } = await supabase.storage.from("results").createSignedUrl('/test_name/mesh/placeholder.fbx', 60)
-	const { data, error } = await supabase.storage.from("results").createSignedUrl(pathtofile, 600)
+	const { data, error } = await supabase.storage
+		.from("results")
+		.createSignedUrl(pathtofile, 600);
 
 	if (error) {
 		// console.log("error", error);
@@ -510,11 +509,10 @@ app.get("/results/:id/meshUrl", async (req, res) => {
 	console.log("results", data);
 
 	res.send(data);
-
 });
 
 app.post("/results/", async (req, res) => {
-	const {name} = req.body;
+	const { name } = req.body;
 	const { data, error } = await supabase.storage
 		.from("results")
 		.upload(`${name}/info.json`, JSON.stringify(req.body), {
