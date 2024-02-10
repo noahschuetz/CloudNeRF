@@ -1,7 +1,7 @@
 import { chmodSync, mkdirSync, writeFileSync } from "fs";
 import path from "path";
 import { supabase } from "../supabaseClient.js";
-import { spawnSync } from "child_process";
+import { spawn } from "child_process";
 
 export async function loadDatasetIntoTemporaryDirectory(modelId, datasetId) {
 	console.log("Creating tmp dir");
@@ -48,28 +48,51 @@ export async function loadDatasetIntoTemporaryDirectory(modelId, datasetId) {
 
 export function runModel(config) {
 	console.log("Starting training process");
-	const trainingProcess = spawnSync(config.runCmd, config.runCmdArgs, {
+	const trainingProcess = spawn(config.runCmd, config.runCmdArgs, {
 		shell: true, // for windows
 	});
-	console.log(
-		"Download finished",
-		`\nSTDERR: ${trainingProcess.stderr}`,
-		`\nSTDOUT: ${trainingProcess.stdout}`,
+	
+	pipeOutputOfChildProcess(trainingProcess, `training model ${config.modelId}`)
+
+	trainingProcess.on("close", () =>
+		console.log("\n\n\n\nFINISHED TRAINING MODEL\n\n\n\n"),
 	);
 }
 
-export function installModel(config){
+export function installModel(config) {
 	console.log("Installing docker image for modell...");
-	const installProcess = spawnSync(config.installCmd, config.installCmdArgs, {
+	console.log(config.installCmd, config.installCmdArgs);
+
+	const installProcess = spawn(config.installCmd, config.installCmdArgs, {
 		shell: true, // for windows
 	});
-	console.log(
-		"Download finished",
-		`\nSTDERR: ${installProcess.stderr}`,
-		`\nSTDOUT: ${installProcess.stdout}`,
+
+	pipeOutputOfChildProcess(installProcess, `installing model ${config.modelId}`)
+
+	installProcess.on("close", () =>
+		console.log("\n\n\n\nFINISHED INSTALLING MODEL\n\n\n\n"),
 	);
 }
 
 function tmpDirForModelRun(modelId) {
 	return path.join(process.env.ROOT_DIR, "tmp", modelId);
+}
+
+function pipeOutputOfChildProcess(process, id){
+	process.stdout.on("data", (m) =>
+		console.log(`${id}: STDOUT DATA ${m.toString()}`),
+	);
+	process.stdout.on("error", (m) =>
+		console.log(`${id}: STDOUT ERROR ${m.toString()}`),
+	);
+	process.stderr.on("data", (m) =>
+		console.log(`${id}: STDERR DATA ${m.toString()}`),
+	);
+	process.stderr.on("error", (m) =>
+		console.log(`${id}: STDERR ERROR ${m.toString()}`),
+	);
+
+	process.on("close", () =>
+		console.log("\n\n\n\nFINISHED INSTALLING MODEL\n\n\n\n"),
+	);
 }
