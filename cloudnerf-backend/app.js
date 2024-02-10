@@ -82,7 +82,7 @@ app.get("/datasets", async (req, res) => {
 			allInfo.push(infoData);
 		} catch (error) {
 			console.error("Error downloading info from folders:", error.message);
-			console.error("Erronous dataset is", dataset.name)
+			console.error("Erronous dataset is", dataset.name);
 		}
 	}
 
@@ -134,7 +134,7 @@ app.delete("/datasets/:id", async (req, res) => {
 
 		const { data: images, error: imagesError } = await supabase.storage
 			.from("datasets")
-			.list(`${id}/images`, {limit: 10000});
+			.list(`${id}/images`, { limit: 10000 });
 
 		if (imagesError) {
 			console.log("error", imagesError);
@@ -370,12 +370,17 @@ app.post(
 	},
 );
 
+app.get("/datasets/fetch/configs", async (req, res) => {
+	res.json(fetchDatasetConfigs);
+});
+
 app.get("/datasets/fetch/:id", async (req, res) => {
 	const { id: fetchId } = req.params;
 	const config = fetchDatasetConfigs.filter((c) => c.fetchId === fetchId)[0];
-	downloadDataset(config);
-	await uploadDatasetsToSupabase(config);
-	res.status(200).send("success");
+	downloadDataset(config).once("close", async () => {
+		await uploadDatasetsToSupabase(config);
+		res.status(200).send("success");
+	});
 });
 
 app.get("/models/run/:modelId/:datasetId", async (req, res) => {
