@@ -1,10 +1,12 @@
+import { join } from "path";
+
 export const runModelsConfigs = [
 	{
 		modelId: "instantngp",
 		displayName: "Instant-NGP",
 		dockerImage: "dromni/nerfstudio",
 		installCmd: "docker",
-		installCmdArgs: ["run", "--rm", "dromni/nerfstudio:1.0.0", "ls"],
+		installCmdArgs: ["pull", "dromni/nerfstudio:1.0.0"],
 		runCmd: "docker",
 		runCmdArgs: [
 			"run",
@@ -26,7 +28,7 @@ export const runModelsConfigs = [
 		displayName: "Neus",
 		dockerImage: "dromni/nerfstudio",
 		installCmd: "docker",
-		installCmdArgs: ["run", "--rm", "dromni/nerfstudio:1.0.0", "ls"],
+		installCmdArgs: ["pull", "dromni/nerfstudio:1.0.0"],
 		runCmd: "docker",
 		runCmdArgs: [
 			"run",
@@ -48,7 +50,7 @@ export const runModelsConfigs = [
 		displayName: "Nerfacto",
 		dockerImage: "dromni/nerfstudio",
 		installCmd: "docker",
-		installCmdArgs: ["run", "--rm", "dromni/nerfstudio:1.0.0", "ls"],
+		installCmdArgs: ["pull", "dromni/nerfstudio:1.0.0"],
 		runCmd: "docker",
 		runCmdArgs: [
 			"run",
@@ -61,8 +63,23 @@ export const runModelsConfigs = [
 			"dromni/nerfstudio:1.0.0",
 			"ns-train",
 			"nerfacto",
+			"--pipeline.model.predict-normals",
+			"True",
 			"--data",
 			"/workspace/data",
+		],
+		exportGeometryCmd: "docker",
+		exportGeometryCmdArgs: [
+			"run",
+			"--gpus",
+			"all",
+			"-v",
+			`${process.env.ROOT_DIR}/tmp/nerfacto/:/workspace/`,
+			"--rm",
+			"--shm-size=12gb",
+			"dromni/nerfstudio:1.0.0",
+			"ns-export",
+			"poisson",
 		],
 	},
 	{
@@ -70,7 +87,7 @@ export const runModelsConfigs = [
 		displayName: "Mip-NeRF",
 		dockerImage: "dromni/nerfstudio",
 		installCmd: "docker",
-		installCmdArgs: ["run", "--rm", "dromni/nerfstudio:1.0.0", "ls"],
+		installCmdArgs: ["pull", "dromni/nerfstudio:1.0.0"],
 		runCmd: "docker",
 		runCmdArgs: [
 			"run",
@@ -96,9 +113,9 @@ export const runModelsConfigs = [
 			"build",
 			"-t",
 			"cloudnerf/kplanes",
-			"-f",
-			"Dockerfile.kplanes",
-			`${process.env.ROOT_DIR}/run_models/dockerfiles/`,
+			"-",
+			"<",
+			join(process.env.ROOT_DIR, "/run_models/dockerfiles/Dockerfile.kplanes"),
 		],
 		runCmd: "docker",
 		runCmdArgs: [
@@ -109,7 +126,7 @@ export const runModelsConfigs = [
 			`${process.env.ROOT_DIR}/tmp/kplanes/:/workspace/`,
 			"--rm",
 			"--shm-size=12gb",
-			"dromni/nerfstudio:1.0.0",
+			"cloudnerf/kplanes",
 			"ns-train",
 			"kplanes",
 			"--data",
@@ -125,9 +142,9 @@ export const runModelsConfigs = [
 			"build",
 			"-t",
 			"cloudnerf/kplanes",
-			"-f",
-			`${process.env.ROOT_DIR}/run_models/dockerfiles/Dockerfile.kplanes`,
-			`${process.env.ROOT_DIR}/run_models/dockerfiles/`,
+			"-",
+			"<",
+			join(process.env.ROOT_DIR, "/run_models/dockerfiles/Dockerfile.kplanes"),
 		],
 		runCmd: "docker",
 		runCmdArgs: [
@@ -138,7 +155,7 @@ export const runModelsConfigs = [
 			`${process.env.ROOT_DIR}/tmp/kplanes-dynamic/:/workspace/`,
 			"--rm",
 			"--shm-size=12gb",
-			"dromni/nerfstudio:1.0.0",
+			"cloudnerf/kplanes",
 			"ns-train",
 			"kplanes-dynamic",
 			"--data",

@@ -79,6 +79,76 @@ export const fetchDatasetConfigs = [
 				"data/nerfstudio/bww_entrance/images",
 				"data/nerfstudio/bww_entrance/transforms.json",
 			],
+			[
+				"campanile",
+				"data/nerfstudio/campanile/images",
+				"data/nerfstudio/campanile/transforms.json",
+			],
+			[
+				"desolation",
+				"data/nerfstudio/desolation/images",
+				"data/nerfstudio/desolation/transforms.json",
+			],
+			[
+				"library",
+				"data/nerfstudio/library/images",
+				"data/nerfstudio/library/transforms.json",
+			],
+			[
+				"poster",
+				"data/nerfstudio/poster/images",
+				"data/nerfstudio/poster/transforms.json",
+			],
+			[
+				"redwoods2",
+				"data/nerfstudio/redwoods2/images",
+				"data/nerfstudio/redwoods2/transforms.json",
+			],
+			[
+				"storefront",
+				"data/nerfstudio/storefront/images",
+				"data/nerfstudio/storefront/transforms.json",
+			],
+			[
+				"vegetation",
+				"data/nerfstudio/vegetation/images",
+				"data/nerfstudio/vegetation/transforms.json",
+			],
+			[
+				"Egypt",
+				"data/nerfstudio/Egypt/images",
+				"data/nerfstudio/Egypt/transforms.json",
+			],
+			[
+				"person",
+				"data/nerfstudio/person/images",
+				"data/nerfstudio/person/transforms.json",
+			],
+			[
+				"kitchen",
+				"data/nerfstudio/kitchen/images",
+				"data/nerfstudio/kitchen/transforms.json",
+			],
+			[
+				"plane",
+				"data/nerfstudio/plane/images",
+				"data/nerfstudio/plane/transforms.json",
+			],
+			[
+				"dozer",
+				"data/nerfstudio/dozer/images",
+				"data/nerfstudio/dozer/transforms.json",
+			],
+			[
+				"floating-tree",
+				"data/nerfstudio/floating-tree/images",
+				"data/nerfstudio/floating-tree/transforms.json",
+			],
+			[
+				"aspen",
+				"data/nerfstudio/aspen/images",
+				"data/nerfstudio/aspen/transforms.json",
+			],
 		],
 	},
 ];
