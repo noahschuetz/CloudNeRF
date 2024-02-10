@@ -1,5 +1,11 @@
-import { chmodSync, mkdirSync, writeFileSync } from "fs";
-import path from "path";
+import {
+	chmodSync,
+	mkdirSync,
+	readFileSync,
+	readdirSync,
+	writeFileSync,
+} from "fs";
+import path, { join } from "path";
 import { supabase } from "../supabaseClient.js";
 import { spawn } from "child_process";
 
@@ -46,53 +52,80 @@ export async function loadDatasetIntoTemporaryDirectory(modelId, datasetId) {
 	writeFileSync(path.join(`${tmpDir}/data`, "transforms.json"), buffer);
 }
 
-export function runModel(config) {
-	console.log("Starting training process");
-	const trainingProcess = spawn(config.runCmd, config.runCmdArgs, {
-		shell: true, // for windows
-	});
-	
-	pipeOutputOfChildProcess(trainingProcess, `training model ${config.modelId}`)
-
-	trainingProcess.on("close", () =>
-		console.log("\n\n\n\nFINISHED TRAINING MODEL\n\n\n\n"),
-	);
-}
-
 export function installModel(config) {
-	console.log("Installing docker image for modell...");
-	console.log(config.installCmd, config.installCmdArgs);
+	console.log("Installing docker image for model...");
+	console.log(config.installCmd, config.installCmdArgs.join(" "));
 
 	const installProcess = spawn(config.installCmd, config.installCmdArgs, {
 		shell: true, // for windows
 	});
 
-	pipeOutputOfChildProcess(installProcess, `installing model ${config.modelId}`)
-
-	installProcess.on("close", () =>
-		console.log("\n\n\n\nFINISHED INSTALLING MODEL\n\n\n\n"),
+	pipeOutputOfChildProcess(
+		installProcess,
+		`installing model ${config.modelId}`,
 	);
+}
+
+export function runModel(config, datasetId) {
+	console.log("Starting training process");
+	console.log(config.runCmd, config.runCmdArgs.join(" "));
+
+	const trainingProcess = spawn(config.runCmd, config.runCmdArgs, {
+		shell: true, // for windows
+	});
+
+	trainingProcess.once("close", () => {
+		exportModel(config);
+	});
+
+	pipeOutputOfChildProcess(trainingProcess, `training model ${config.modelId}`);
+}
+
+export function exportModel(config, datasetId) {
+	console.log("Exporting model as mesh...");
+	console.log(config.exportCmd, config.exportCmdArgs.join(" "));
+
+	const exportProcess = spawn(config.exportCmd, config.exportCmdArgs, {
+		shell: true, //windows
+	});
+
+	exportProcess.once("close", async () => {
+		const tmpDir = tmpDirForModelRun(config);
+		const resultFiles = readdirSync(join(tmpDir, "results"));
+		for (const rf of resultFiles) {
+			const content = readFileSync(join(tmpDir, "results", rf));
+			await supabase.storage
+				.from("results")
+				.upload(`${config.modelId}-${datasetId}/${rf}`, content);
+		}
+	});
+
+	pipeOutputOfChildProcess(exportProcess, `exporting model ${config.modelId}`);
 }
 
 function tmpDirForModelRun(modelId) {
 	return path.join(process.env.ROOT_DIR, "tmp", modelId);
 }
 
-function pipeOutputOfChildProcess(process, id){
-	process.stdout.on("data", (m) =>
-		console.log(`${id}: STDOUT DATA ${m.toString()}`),
-	);
-	process.stdout.on("error", (m) =>
-		console.log(`${id}: STDOUT ERROR ${m.toString()}`),
-	);
-	process.stderr.on("data", (m) =>
-		console.log(`${id}: STDERR DATA ${m.toString()}`),
-	);
-	process.stderr.on("error", (m) =>
-		console.log(`${id}: STDERR ERROR ${m.toString()}`),
-	);
+export function pipeOutputOfChildProcess(process, id) {
+	process.stdout.on("data", (m) => {
+		console.log(`\x1b[45m [${id} (stdout/data)]: \x1b[0m`);
+		console.log(m.toString());
+	});
+	process.stdout.on("error", (m) => {
+		console.log(`\x1b[45m [${id} (stdout/error)]: \x1b[0m`);
+		console.log(m.toString());
+	});
+	process.stderr.on("data", (m) => {
+		console.log(`\x1b[45m [${id} (stderr/data)]: \x1b[0m`);
+		console.log(m.toString());
+	});
+	process.stderr.on("error", (m) => {
+		console.log(`\x1b[45m [${id} (stderr/error)]: \x1b[0m`);
+		console.log(m.toString());
+	});
 
 	process.on("close", () =>
-		console.log("\n\n\n\nFINISHED INSTALLING MODEL\n\n\n\n"),
+		console.log(`\n\n\n\n\x1b[42m\x1b[30mFINISHED ${id}\x1b[0m\n\n\n\n`),
 	);
 }
