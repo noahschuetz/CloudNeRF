@@ -37,39 +37,6 @@ export default function Models() {
 		<>
 			<Row>
 				<Col span={24}>
-					<h1>Models</h1>
-					{modelConfigs && dockerImages ? (
-						<List
-							bordered
-							dataSource={models}
-							renderItem={(item, index) => (
-								<List.Item
-									actions={[
-										dockerImages.includes(item.dockerImage) ? (
-											<p>already installed, cool</p>
-										) : (
-											<Button onClick={() => handleInstallModel(item.modelId)}>
-												Install
-											</Button>
-										),
-										// <RunModelButton modelId={item.name} datasetId={datasetId} />
-									]}
-								>
-									<List.Item.Meta
-										title={item.name}
-										description={item.description}
-									/>
-								</List.Item>
-							)}
-						/>
-					) : (
-						<Spin />
-					)}
-				</Col>
-			</Row>
-
-			<Row>
-				<Col span={24}>
 					<h1>Run Models</h1>
 					Dataset:
 					<Select
@@ -120,6 +87,38 @@ export default function Models() {
 					<Spin />
 				)}
 			</div> */}
+				</Col>
+			</Row>
+			<Row>
+				<Col span={24}>
+					<h1>Models</h1>
+					{modelConfigs && dockerImages ? (
+						<List
+							bordered
+							dataSource={models}
+							renderItem={(item, index) => (
+								<List.Item
+									actions={[
+										dockerImages.includes(item.dockerImage) ? (
+											<p>already installed, cool</p>
+										) : (
+											<Button onClick={() => handleInstallModel(item.modelId)}>
+												Install
+											</Button>
+										),
+										// <RunModelButton modelId={item.name} datasetId={datasetId} />
+									]}
+								>
+									<List.Item.Meta
+										title={item.name}
+										description={item.description}
+									/>
+								</List.Item>
+							)}
+						/>
+					) : (
+						<Spin />
+					)}
 				</Col>
 			</Row>
 		</>
