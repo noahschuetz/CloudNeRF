@@ -2,6 +2,7 @@ import { spawnSync } from "child_process";
 import { readFileSync, mkdirSync, readdirSync, rmdirSync, chmodSync } from "fs";
 import { supabase } from "../supabaseClient.js";
 import path from "path";
+import { pipeOutputOfChildProcess } from "../run_models/utils.js";
 
 export const datasetFetchIds = ["blender"];
 
@@ -15,15 +16,11 @@ export function downloadDataset(config) {
 	console.log(
 		`Starting download (cmd: ${config.cmd}, args: ${config.cmdArgs})`,
 	);
-	const downloadProcess = spawnSync(config.cmd, config.cmdArgs, {
+	const downloadProcess = spawn(config.cmd, config.cmdArgs, {
 		shell: true, // windows
 	});
-	console.log(
-		"Download finished",
-		`\nSTDERR: ${downloadProcess.stderr}`,
-		`\nSTDOUT: ${downloadProcess.stdout}`,
-	);
-	return downloadProcess;
+	
+	pipeOutputOfChildProcess(downloadProcess, `downloading ${config.fetchId}`)
 }
 
 export async function uploadDatasetsToSupabase(config) {
@@ -93,7 +90,7 @@ export async function uploadDatasetsToSupabase(config) {
 export function fixTransformsJson(transformsJson) {
 	const transforms = JSON.parse(transformsJson);
 	for (const frame of transforms.frames) {
-		if (!frame.file_path.includes(".png")) {
+		if (!/\.\w+$/.test(frame.file_path)) {
 			frame.file_path = `${frame.file_path}.png`;
 		}
 		if (frame.file_path.split("/")[0] === ".") {
