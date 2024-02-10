@@ -7,9 +7,33 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 //theeScene component with meshurl as prop
 const ThreeScene = (prop) => {
 
-    const meshurl = prop.meshurl;
+    const leftmeshurl = prop.leftmeshurl;
+    const rightmeshurl = prop.rightmeshurl;
+    const leftitem = prop.leftitem;
+    const rightitem = prop.rightitem;
 
+    var leftfiletype = "";
+    var leftscale = {x: 1, y: 1, z: 1}
+    var leftrotation = {x: 0, y: 0, z: 0}
 
+    var rightfiletype = "";
+    var rightscale = {x: 1, y: 1, z: 1}
+    var rightrotation = {x: 0, y: 0, z: 0}
+
+    console.log(leftitem);
+    console.log(rightitem);
+    
+    if (leftitem != "") {
+        leftfiletype = leftitem.filetype;
+        leftscale = leftitem.scale || {x: 1, y: 1, z: 1};
+        leftrotation = leftitem.rotation || {x: 0, y: 0, z: 0};
+    }
+
+    if (rightitem != "") {
+        rightfiletype = rightitem.filetype;
+        rightscale = rightitem.scale || {x: 1, y: 1, z: 1};
+        rightrotation = rightitem.rotation || {x: 0, y: 0, z: 0};
+    }
 
     const sceneRef1 = useRef(null);
     const sceneRef2 = useRef(null);
@@ -21,10 +45,6 @@ const ThreeScene = (prop) => {
     const windowHeight = (window.innerHeight*0.8)/2;
   
     useEffect(() => {
-
-        console.log('meshurl', meshurl);
-
-        
 
 
         const scene1 = new THREE.Scene();        
@@ -44,18 +64,13 @@ const ThreeScene = (prop) => {
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Soft white light
         scene1.add(ambientLight);
 
-        if (meshurl) {
+        if (leftmeshurl && leftfiletype === 'fbx') {
             const loader = new FBXLoader();
-            loader.load(meshurl, function (object) {
-                // Assuming you have a scene already initialized
-                console.log('object', object);
-                // give the object a the same material
-                object.traverse(child => {
-                    if (child.isMesh) {
-                        child.material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-                    }
-                });
-                scene1.add(object);
+            loader.load(leftmeshurl, function (object) {
+
+                object.scale.set(leftscale.x, leftscale.y, leftscale.z);
+                object.rotation.set(leftrotation.x, leftrotation.y, leftrotation.z);
+                scene1.add(object); 
             });
         }
         
@@ -85,12 +100,25 @@ const ThreeScene = (prop) => {
         sceneRef2.current.appendChild(renderer2.domElement);
 
         const controls2 = new OrbitControls(camera1, renderer2.domElement);
+
+        // Create an ambient light to provide global illumination
+        const ambientLight2 = new THREE.AmbientLight(0xffffff, 0.5); // Soft white light
+        scene2.add(ambientLight2);
+
+        if (rightmeshurl && rightfiletype === 'fbx') {
+            const loader = new FBXLoader();
+            loader.load(rightmeshurl, function (object) {
+                object.scale.set(rightscale.x, rightscale.y, rightscale.z);
+                object.rotation.set(rightrotation.x, rightrotation.y, rightrotation.z);
+                scene2.add(object); 
+            });
+        }
         
         // Set up a simple cube
         const geometry2 = new THREE.BoxGeometry();
         const material2 = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
         const cube2 = new THREE.Mesh(geometry2, material2);
-        scene2.add(cube2);
+        // scene2.add(cube2);
 
         controls2.update()
 

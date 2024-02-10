@@ -497,11 +497,11 @@ app.get("/results/:id/meshUrl", async (req, res) => {
 	const filename = resultlist[0].name;
 	// log("filename", filename);
 
-	const pathtofile = `/test_name/mesh/${filename}`;
-	// log("pathtofile", pathtofile);
+	const pathtofile = `/${id}/mesh/${filename}`;
+	log("pathtofile", pathtofile);
 
 	// const { data, error } = await supabase.storage.from("results").createSignedUrl('/test_name/mesh/placeholder.fbx', 60)
-	const { data, error } = await supabase.storage.from("results").createSignedUrl(pathtofile, 60)
+	const { data, error } = await supabase.storage.from("results").createSignedUrl(pathtofile, 600)
 
 	if (error) {
 		// console.log("error", error);
