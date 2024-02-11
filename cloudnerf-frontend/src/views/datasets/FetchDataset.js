@@ -1,5 +1,5 @@
 import { Row, Col, Button, List, Spin } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
 	useGetFetchDatasetConfigsQuery,
 	useGetDatasetsQuery,
@@ -25,14 +25,17 @@ export default function FetchDatasets() {
 					<List
 						bordered
 						dataSource={fetchDatasetsConfigs}
-						renderItem={(item, index) => (
-							<FetchDatasetListItem
-								item={item}
-								disableDownload={downloadedDatasetBundles?.includes(
-									item.fetchId,
-								)}
-							/>
-						)}
+						renderItem={(item, index) => {
+							const downloaded = downloadedDatasetBundles?.includes(
+								item.fetchId,
+							);
+							return (
+								<FetchDatasetListItem
+									item={item}
+									disableDownload={downloaded}
+								/>
+							);
+						}}
 					/>
 				</Col>
 			</Row>
@@ -42,25 +45,32 @@ export default function FetchDatasets() {
 
 function FetchDatasetListItem({ item, disableDownload }) {
 	const [downloading, setDownloading] = useState(false);
+	const [disabledState, setDisabledState] = useState(false);
+
+	useEffect(() => {
+		setDisabledState(disableDownload);
+	}, [disableDownload]);
+
 	return (
 		<List.Item
 			actions={[
-				disableDownload ? (
-					<p>already downloaded, cool</p>
-				) : downloading ? (
+				downloading ? (
 					<Spin />
 				) : (
 					<Button
 						onClick={async () => {
 							setDownloading(true);
-							const res = await fetch(`http://localhost:5000/datasets/fetch/${item.fetchId}`);
-							if (res.status === 200){
-								disableDownload = true
-								setDownloading(false)
+							const res = await fetch(
+								`http://localhost:5000/datasets/fetch/${item.fetchId}`,
+							);
+							if (res.status === 200) {
+								setDisabledState(true);
+								setDownloading(false);
 							}
 						}}
+						disabled={disabledState}
 					>
-						Download
+						{disabledState ? "Downloaded" : "Download"}
 					</Button>
 				),
 				// <RunModelButton modelId={item.name} datasetId={datasetId} />
