@@ -73,6 +73,7 @@ export async function uploadDatasetsToSupabase(config) {
 			description: `Dataset ${datasetId} from ${config.fetchId} bundle`,
 			images: readdirSync(dataDir).length,
 			compatible_models: ["nerfacto", "neus", "instantngp"],
+			dataset_bundle: config.fetchId,
 		});
 		await supabase.storage
 			.from("datasets")
