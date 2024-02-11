@@ -61,7 +61,7 @@ export const api = createApi({
 			providesTags: (result, error, id) => [{ type: "models", id }],
 		}),
 		getResults: build.query({
-			query: () => `results/`,
+			query: () => "results/",
 			providesTags: (result, error, id) => [{ type: "results", id }],
 		}),
 		getResultMeshUrl: build.query({
