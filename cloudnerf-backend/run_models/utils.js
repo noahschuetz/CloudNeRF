@@ -75,7 +75,7 @@ export function runModel(config, datasetId) {
 	});
 
 	trainingProcess.once("close", () => {
-		exportModel(config);
+		exportModel(config, datasetId);
 	});
 
 	pipeOutputOfChildProcess(trainingProcess, `training model ${config.modelId}`);
