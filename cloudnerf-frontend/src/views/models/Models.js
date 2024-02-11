@@ -96,25 +96,27 @@ export default function Models() {
 						<List
 							bordered
 							dataSource={models}
-							renderItem={(item, index) => (
-								<List.Item
-									actions={[
-										dockerImages.includes(item.dockerImage) ? (
-											<p>already installed, cool</p>
-										) : (
-											<Button onClick={() => handleInstallModel(item.modelId)}>
-												Install
-											</Button>
-										),
-										// <RunModelButton modelId={item.name} datasetId={datasetId} />
-									]}
-								>
-									<List.Item.Meta
-										title={item.name}
-										description={item.description}
-									/>
-								</List.Item>
-							)}
+							renderItem={(item, index) => {
+								const installed = dockerImages.includes(item.dockerImage);
+								return (
+									<List.Item
+										actions={[
+											<Button
+												onClick={() => handleInstallModel(item.modelId)}
+												disabled={installed}
+											>
+												{installed ? "Installed" : "Install"}
+											</Button>,
+											// <RunModelButton modelId={item.name} datasetId={datasetId} />
+										]}
+									>
+										<List.Item.Meta
+											title={item.name}
+											description={item.description}
+										/>
+									</List.Item>
+								);
+							}}
 						/>
 					) : (
 						<Spin />
