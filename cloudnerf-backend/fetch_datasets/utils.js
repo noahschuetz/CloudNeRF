@@ -1,10 +1,8 @@
-import { spawnSync } from "child_process";
+import { spawn } from "child_process";
 import { readFileSync, mkdirSync, readdirSync, rmdirSync, chmodSync } from "fs";
 import { supabase } from "../supabaseClient.js";
 import path from "path";
 import { pipeOutputOfChildProcess } from "../run_models/utils.js";
-
-export const datasetFetchIds = ["blender"];
 
 export function downloadDataset(config) {
 	console.log("Creating temporary directory for dataset download");
@@ -19,8 +17,10 @@ export function downloadDataset(config) {
 	const downloadProcess = spawn(config.cmd, config.cmdArgs, {
 		shell: true, // windows
 	});
-	
-	pipeOutputOfChildProcess(downloadProcess, `downloading ${config.fetchId}`)
+
+	pipeOutputOfChildProcess(downloadProcess, `downloading ${config.fetchId}`);
+
+	return downloadProcess;
 }
 
 export async function uploadDatasetsToSupabase(config) {
