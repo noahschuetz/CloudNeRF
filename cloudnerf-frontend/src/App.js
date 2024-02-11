@@ -10,6 +10,7 @@ import EditDataset from './views/datasets/EditDataset';
 
 import {Layout} from 'antd';
 import FetchDatasets from './views/datasets/FetchDataset';
+import { Helmet } from 'react-helmet';
 const {Content} = Layout;
 
 const router = createBrowserRouter([
@@ -26,9 +27,12 @@ function App() {
 
   return (
     <div className="App">
+      <Helmet>
+        <title>CloudNeRF</title>
+      </Helmet>
       <Layout>
         <Navbar />
-        <Content style={{padding: '20px', height: '90vh'}}>
+        <Content style={{padding: '20px', height: '90vh', overflowY: "auto"}}>
           <RouterProvider router={router} />        
         </Content>
       </Layout>
