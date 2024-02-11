@@ -136,7 +136,7 @@ export const fetchDatasetConfigs = [
 			],
 			[
 				"dozer",
-				"data/nerfstudio/dozer/images",
+				"data/nerfstudio/dozer/images_4",
 				"data/nerfstudio/dozer/transforms.json",
 			],
 			[
@@ -148,6 +148,57 @@ export const fetchDatasetConfigs = [
 				"aspen",
 				"data/nerfstudio/aspen/images",
 				"data/nerfstudio/aspen/transforms.json",
+			],
+		],
+	},
+	{
+		fetchId: "dnerf",
+		cmd: "docker",
+		cmdArgs: [
+			"run",
+			"--volume",
+			`${process.env.ROOT_DIR}/tmp/dnerf/:/workspace/`,
+			"--rm",
+			"--shm-size=12gb",
+			"dromni/nerfstudio:1.0.0",
+			"ns-download-data",
+			"dnerf",
+		],
+		datasetPaths: [
+			[
+				"bouncingballs",
+				"data/dnerf/bouncingballs/train",
+				"data/dnerf/bouncingballs/transforms_train.json",
+			],
+			[
+				"hellwarrior",
+				"data/dnerf/hellwarrior/train",
+				"data/dnerf/hellwarrior/transforms_train.json",
+			],
+			[
+				"hook",
+				"data/dnerf/hook/train",
+				"data/dnerf/hook/transforms_train.json",
+			],
+			[
+				"jumpingjacks",
+				"data/dnerf/jumpingjacks/train",
+				"data/dnerf/jumpingjacks/transforms_train.json",
+			],
+			[
+				"mutant",
+				"data/dnerf/mutant/train",
+				"data/dnerf/mutant/transforms_train.json",
+			],
+			[
+				"standup",
+				"data/dnerf/standup/train",
+				"data/dnerf/standup/transforms_train.json",
+			],
+			[
+				"trex",
+				"data/dnerf/trex/train",
+				"data/dnerf/trex/transforms_train.json",
 			],
 		],
 	},
