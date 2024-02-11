@@ -2,7 +2,7 @@ import { join } from "path";
 
 export const runModelsConfigs = [
 	{
-		modelId: "instantngp",
+		modelId: "instant-ngp",
 		displayName: "Instant-NGP",
 		dockerImage: "dromni/nerfstudio",
 		installCmd: "docker",
@@ -13,12 +13,14 @@ export const runModelsConfigs = [
 			"--gpus",
 			"all",
 			"-v",
-			`${process.env.ROOT_DIR}/tmp/instantngp/:/workspace/`,
+			`${process.env.ROOT_DIR}/tmp/instant-ngp/:/workspace/`,
 			"--rm",
 			"--shm-size=12gb",
 			"dromni/nerfstudio:1.0.0",
 			"ns-train",
 			"instant-ngp",
+			"--timestamp",
+			"latest",
 			"--data",
 			"/workspace/data",
 		],
@@ -167,6 +169,8 @@ export const runModelsConfigs = [
 			"cloudnerf/kplanes",
 			"ns-train",
 			"kplanes-dynamic",
+			"--timestamp",
+			"latest",
 			"--data",
 			"/workspace/data",
 		],
