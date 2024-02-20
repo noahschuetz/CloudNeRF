@@ -14,9 +14,11 @@ export function downloadDataset(config) {
 	console.log(
 		`Starting download (cmd: ${config.cmd}, args: ${config.cmdArgs})`,
 	);
-	const downloadProcess = spawn(config.cmd, config.cmdArgs, {
-		shell: true, // windows
-	});
+	// const downloadProcess = spawn(config.cmd, config.cmdArgs, {
+	// 	shell: true, // windows
+	// });
+
+	const downloadProcess = spawn("ls")
 
 	pipeOutputOfChildProcess(downloadProcess, `downloading ${config.fetchId}`);
 

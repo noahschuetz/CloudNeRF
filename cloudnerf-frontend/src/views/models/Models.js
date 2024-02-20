@@ -25,12 +25,6 @@ export default function Models() {
 		const res = await fetch(
 			`http://localhost:5000/models/run/${selectedModel}/${selectedDataset}`,
 		);
-		console.log(res);
-	};
-
-	const handleInstallModel = async (modelId) => {
-		const res = await fetch(`http://localhost:5000/models/install/${modelId}`);
-		console.log({ installModelRes: res });
 	};
 
 	return (
@@ -96,27 +90,12 @@ export default function Models() {
 						<List
 							bordered
 							dataSource={models}
-							renderItem={(item, index) => {
-								const installed = dockerImages.includes(item.dockerImage);
-								return (
-									<List.Item
-										actions={[
-											<Button
-												onClick={() => handleInstallModel(item.modelId)}
-												disabled={installed}
-											>
-												{installed ? "Installed" : "Install"}
-											</Button>,
-											// <RunModelButton modelId={item.name} datasetId={datasetId} />
-										]}
-									>
-										<List.Item.Meta
-											title={item.name}
-											description={item.description}
-										/>
-									</List.Item>
-								);
-							}}
+							renderItem={(item, index) => (
+								<ModelListItem
+									item={item}
+									installedInitally={dockerImages.includes(item.dockerImage)}
+								/>
+							)}
 						/>
 					) : (
 						<Spin />
@@ -124,6 +103,40 @@ export default function Models() {
 				</Col>
 			</Row>
 		</>
+	);
+}
+
+function ModelListItem({ item, installedInitally }) {
+	const [installed, setInstalled] = useState(installedInitally);
+	const [installing, setInstalling] = useState(false);
+
+	return (
+		<List.Item
+			actions={[
+				installing ? (
+					<Spin />
+				) : (
+					<Button
+						onClick={async () => {
+							setInstalling(true);
+							const res = await fetch(
+								`http://localhost:5000/models/install/${item.modelId}`,
+							);
+							if (res.status === 200){
+								setInstalled(true)
+								setInstalling(false)
+							}
+						}}
+						disabled={installed}
+					>
+						{installed ? "Installed" : "Install"}
+					</Button>
+				),
+				// <RunModelButton modelId={item.name} datasetId={datasetId} />
+			]}
+		>
+			<List.Item.Meta title={item.name} description={item.description} />
+		</List.Item>
 	);
 }
 

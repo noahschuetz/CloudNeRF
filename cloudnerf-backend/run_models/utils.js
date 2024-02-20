@@ -64,6 +64,8 @@ export function installModel(config) {
 		installProcess,
 		`installing model ${config.modelId}`,
 	);
+
+	return installProcess
 }
 
 export function runModel(config, datasetId) {

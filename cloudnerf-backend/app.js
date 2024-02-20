@@ -411,8 +411,7 @@ app.get("/models/configs", async (req, res) => {
 app.get("/models/install/:modelId", async (req, res) => {
 	const { modelId } = req.params;
 	const config = runModelsConfigs.filter((c) => c.modelId === modelId)[0];
-	installModel(config);
-	res.status(200).send("success");
+	installModel(config).once("close", () => res.status(200).send("success"));
 });
 
 app.get("/results", async (req, res) => {
