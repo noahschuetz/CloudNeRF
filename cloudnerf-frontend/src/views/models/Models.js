@@ -23,7 +23,7 @@ export default function Models() {
 
 	const handleRunModel = async () => {
 		const res = await fetch(
-			`http://localhost:5000/models/run/${selectedModel}/${selectedDataset}`,
+			`${process.env.REACT_APP_API_ENDPOINT_URL}/models/run/${selectedModel}/${selectedDataset}`,
 		);
 	};
 
@@ -120,7 +120,7 @@ function ModelListItem({ item, installedInitally }) {
 						onClick={async () => {
 							setInstalling(true);
 							const res = await fetch(
-								`http://localhost:5000/models/install/${item.modelId}`,
+								`process.env.REACT_APP_API_ENDPOINT_URL/models/install/${item.modelId}`,
 							);
 							if (res.status === 200){
 								setInstalled(true)
@@ -146,7 +146,7 @@ function RunModelButton({ modelId, datasetId, children }) {
 			style={{ display: "block" }}
 			onClick={async () => {
 				const res = await fetch(
-					`http://localhost:5000/run_model/${modelId}/${datasetId}`,
+					`process.env.REACT_APP_API_ENDPOINT_URL/run_model/${modelId}/${datasetId}`,
 				);
 				console.log(res);
 			}}

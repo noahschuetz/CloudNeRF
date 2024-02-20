@@ -32,7 +32,7 @@ function Datasets() {
 		name: "file",
 		multiple: true,
 		// on localhost the backend is running on port 5000
-		action: `http://localhost:5000/datasets/${name}/images`,
+		action: `${process.env.REACT_APP_API_ENDPOINT_URL}/datasets/${name}/images`,
 		onChange(info) {
 			const { status } = info.file;
 			if (status !== "uploading") {
@@ -53,7 +53,7 @@ function Datasets() {
 		name: "file",
 		multiple: true,
 		// on localhost the backend is running on port 5000
-		action: `http://localhost:5000/datasets/${name}/transforms`,
+		action: `${process.env.REACT_APP_API_ENDPOINT_URL}/datasets/${name}/transforms`,
 		onChange(info) {
 			const { status } = info.file;
 			if (status !== "uploading") {
