@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Row, Col, Button, Input, message, Upload, Steps } from "antd";
+import { Row, Col, Button, Input, message, Upload, Steps, Alert } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
 
 import { useCreateDatasetMutation, useUpdateImagesMutation } from "../../redux/api";
@@ -107,6 +107,7 @@ function Datasets() {
 			<Row>
 				<Col span={24}>
 					<h1>New Dataset</h1>
+					<Alert>For the colmap file, please use the format used for Instant-NGP</Alert>
 				</Col>
 			</Row>
 			<Row>
