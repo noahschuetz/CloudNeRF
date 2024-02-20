@@ -20,6 +20,8 @@ export const runModelsConfigs = [
 			"instant-ngp",
 			"--timestamp",
 			"latest",
+			"--viewer.quit-on-train-completion",
+			"True",
 			"--data",
 			`/workspace/data/${datasetId}`,
 			datasetType
@@ -63,10 +65,13 @@ export const runModelsConfigs = [
 			"True",
 			"--max-num-iterations",
 			"500",
+			"--viewer.quit-on-train-completion",
+			"True",
 			"--timestamp",
 			"latest",
 			"--data",
 			`/workspace/data/${datasetId}`,
+			datasetType
 		],
 		exportCmdFn: (datasetId) => [
 			"docker",
@@ -113,6 +118,10 @@ export const runModelsConfigs = [
 			"kplanes",
 			"--timestamp",
 			"latest",
+			"--viewer.quit-on-train-completion",
+			"True",
+			"--max-num-iterations",
+			"500",
 			"--data",
 			`/workspace/data/${datasetId}`,
 			datasetType,
