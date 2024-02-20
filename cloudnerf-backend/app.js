@@ -20,6 +20,7 @@ import {
 	installModel,
 	loadDatasetIntoTemporaryDirectory,
 	runModel,
+	exportModel
 } from "./run_models/utils.js";
 import { runModelsConfigs } from "./run_models/configs.js";
 import { spawnSync } from "child_process";
@@ -387,8 +388,13 @@ app.get("/models/run/:modelId/:datasetId", async (req, res) => {
 	const { modelId, datasetId } = req.params;
 	const config = runModelsConfigs.filter((c) => c.modelId === modelId)[0];
 	await loadDatasetIntoTemporaryDirectory(modelId, datasetId);
-	runModel(config);
-	res.status(200).send("success)");
+	
+	const trainingProcess = runModel(config, datasetId);
+
+	trainingProcess.once("close", () => {
+		exportModel(config, datasetId);
+	});
+	res.status(200).send("success");
 });
 
 app.get("/models/docker_images", async (req, res) => {

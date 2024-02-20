@@ -5,10 +5,9 @@ export const runModelsConfigs = [
 		modelId: "instant-ngp",
 		displayName: "Instant-NGP",
 		dockerImage: "dromni/nerfstudio",
-		installCmd: "docker",
-		installCmdArgs: ["pull", "dromni/nerfstudio:1.0.0"],
-		runCmd: "docker",
-		runCmdArgs: [
+		installCmd: ["docker", "pull", "dromni/nerfstudio:1.0.0"],
+		runCmdFn: (datasetId, datasetType) => [
+			"docker",
 			"run",
 			"--gpus",
 			"all",
@@ -22,17 +21,34 @@ export const runModelsConfigs = [
 			"--timestamp",
 			"latest",
 			"--data",
-			"/workspace/data",
+			`/workspace/data/${datasetId}`,
+			datasetType
 		],
+		exportCmdFn: (datasetId) => [
+			"docker",
+			"run",
+			"--gpus",
+			"all",
+			"-v",
+			`${process.env.ROOT_DIR}/tmp/instant-ngp/:/workspace/`,
+			"--rm",
+			"--shm-size=12gb",
+			"dromni/nerfstudio:1.0.0",
+			"ns-export",
+			"tsdf",
+			"--load-config",
+			`outputs/${datasetId}/instant-ngp/latest/config.yml`,
+			"--output-dir",
+			process.env.MESH_RESULTS_DIR_NAME,
+		]
 	},
 	{
 		modelId: "nerfacto",
 		displayName: "Nerfacto",
 		dockerImage: "dromni/nerfstudio",
-		installCmd: "docker",
-		installCmdArgs: ["pull", "dromni/nerfstudio:1.0.0"],
-		runCmd: "docker",
-		runCmdArgs: [
+		installCmd: ["docker", "pull", "dromni/nerfstudio:1.0.0"],
+		runCmdFn: (datasetId, datasetType) => [
+			"docker",
 			"run",
 			"--gpus",
 			"all",
@@ -50,10 +66,10 @@ export const runModelsConfigs = [
 			"--timestamp",
 			"latest",
 			"--data",
-			"/workspace/data",
+			`/workspace/data/${datasetId}`,
 		],
-		exportCmd: "docker",
-		exportCmdArgs: [
+		exportCmdFn: (datasetId) => [
+			"docker",
 			"run",
 			"--gpus",
 			"all",
@@ -65,7 +81,7 @@ export const runModelsConfigs = [
 			"ns-export",
 			"poisson",
 			"--load-config",
-			"outputs/data/nerfacto/latest/config.yml",
+			`outputs/${datasetId}/nerfacto/latest/config.yml`,
 			"--output-dir",
 			process.env.MESH_RESULTS_DIR_NAME,
 		],
@@ -74,8 +90,8 @@ export const runModelsConfigs = [
 		modelId: "kplanes",
 		displayName: "K-Planes",
 		dockerImage: "cloudnerf/kplanes",
-		installCmd: "docker",
-		installCmdArgs: [
+		installCmd: [
+			"docker",
 			"build",
 			"-t",
 			"cloudnerf/kplanes",
@@ -83,8 +99,8 @@ export const runModelsConfigs = [
 			"<",
 			join(process.env.ROOT_DIR, "/run_models/dockerfiles/Dockerfile.kplanes"),
 		],
-		runCmd: "docker",
-		runCmdArgs: [
+		runCmdFn: (datasetId, datasetType) => [
+			"docker",
 			"run",
 			"--gpus",
 			"all",
@@ -98,8 +114,8 @@ export const runModelsConfigs = [
 			"--timestamp",
 			"latest",
 			"--data",
-			"/workspace/data",
-			"nerfstudio-data",
+			`/workspace/data/${datasetId}`,
+			datasetType,
 		],
 	},
 ];

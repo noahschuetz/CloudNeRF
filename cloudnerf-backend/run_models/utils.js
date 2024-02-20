@@ -8,48 +8,41 @@ import {
 import path, { join } from "path";
 import { supabase } from "../supabaseClient.js";
 import { spawn } from "child_process";
+import { writeFile } from "fs/promises";
 
 export async function loadDatasetIntoTemporaryDirectory(modelId, datasetId) {
 	console.log("Creating tmp dir");
 	const tmpDir = tmpDirForModelRun(modelId);
-	mkdirSync(tmpDir, {
+
+	console.log("Loading dataset into temporary directory");
+	await loadDatasetFilesRecursive(datasetId, path.join(tmpDir, "data"));
+}
+
+async function loadDatasetFilesRecursive(basedir, tmpDir) {
+	const currentDir = path.join(tmpDir, basedir);
+
+	mkdirSync(currentDir, {
 		recursive: true,
 		mode: 0o777,
 	});
-	chmodSync(tmpDir, 0o777);
+	chmodSync(currentDir, 0o777);
 
-	console.log("Reading contents of dataset...");
-	const { data: datasetContents } = await supabase.storage
+	const { data: dirContents } = await supabase.storage
 		.from("datasets")
-		.list(datasetId);
+		.list(basedir);
 
-	// images download
-	const assetDir = datasetContents.filter((d) => d.id === null)[0].name;
-	mkdirSync(path.join(tmpDir, "data", assetDir), { recursive: true });
-
-	const { data: assetDirContents } = await supabase.storage
-		.from("datasets")
-		.list(`${datasetId}/${assetDir}`, { limit: 1000 });
-
-	console.log("Downloading assets...");
-	for (const assetFile of assetDirContents) {
-		const filename = assetFile.name;
-		const { data } = await supabase.storage
-			.from("datasets")
-			.download(`${datasetId}/${assetDir}/${filename}`);
-		const buffer = Buffer.from(await data.arrayBuffer());
-		writeFileSync(path.join(tmpDir, "data", assetDir, filename), buffer);
-		console.log(`Got ${filename}`);
+	for (const element of dirContents) {
+		if (element.id === null) {
+			// directory
+			loadDatasetFilesRecursive(`${basedir}/${element.name}`, tmpDir);
+		} else {
+			const { data } = await supabase.storage
+				.from("datasets")
+				.download(`${basedir}/${element.name}`);
+			const buffer = Buffer.from(await data.arrayBuffer());
+			writeFile(path.join(tmpDir, basedir, element.name), buffer);
+		}
 	}
-
-	// transforms file download
-	console.log("Downloading transforms file...");
-	const { data } = await supabase.storage
-		.from("datasets")
-		.download(`${datasetId}/transforms.json`);
-
-	const buffer = Buffer.from(await data.arrayBuffer());
-	writeFileSync(path.join(`${tmpDir}/data`, "transforms.json"), buffer);
 }
 
 export function installModel(config) {
@@ -65,37 +58,55 @@ export function installModel(config) {
 		`installing model ${config.modelId}`,
 	);
 
-	return installProcess
+	return installProcess;
 }
 
 export function runModel(config, datasetId) {
 	console.log("Starting training process");
-	console.log(config.runCmd, config.runCmdArgs.join(" "));
 
-	const trainingProcess = spawn(config.runCmd, config.runCmdArgs, {
+	const info = JSON.parse(
+		readFileSync(
+			path.join(tmpDirForModelRun(config.modelId), "data", datasetId, "info.json"),
+		).toString("utf-8"),
+	);
+
+	const runCommand = config.runCmdFn(datasetId, info.datasetType);
+	console.log(runCommand.join(" "));
+
+	const trainingProcess = spawn(runCommand[0], runCommand.slice(1), {
 		shell: true, // for windows
 	});
 
-	trainingProcess.once("close", () => {
-		exportModel(config, datasetId);
-	});
-
 	pipeOutputOfChildProcess(trainingProcess, `training model ${config.modelId}`);
+
+	return trainingProcess;
 }
 
 export function exportModel(config, datasetId) {
 	console.log("Exporting model as mesh...");
-	console.log(config.exportCmd, config.exportCmdArgs.join(" "));
 
-	const exportProcess = spawn(config.exportCmd, config.exportCmdArgs, {
+	const tmpDir = tmpDirForModelRun(config.modelId);
+
+	const info = JSON.parse(
+		readFileSync(path.join(tmpDir, "data", datasetId, "info.json")).toString("utf-8"),
+	);
+
+	const exportCommand = config.exportCmdFn(datasetId);
+
+	console.log(exportCommand);
+
+	const exportProcess = spawn(exportCommand[0], exportCommand.slice(1), {
 		shell: true, //windows
 	});
 
 	exportProcess.once("close", async () => {
-		const tmpDir = tmpDirForModelRun(config);
-		const resultFiles = readdirSync(join(tmpDir, "results"));
+		const resultFiles = readdirSync(
+			join(tmpDir, process.env.MESH_RESULTS_DIR_NAME),
+		);
 		for (const rf of resultFiles) {
-			const content = readFileSync(join(tmpDir, "results", rf));
+			const content = readFileSync(
+				join(tmpDir, process.env.MESH_RESULTS_DIR_NAME, rf),
+			);
 			await supabase.storage
 				.from("results")
 				.upload(`${config.modelId}-${datasetId}/${rf}`, content);
