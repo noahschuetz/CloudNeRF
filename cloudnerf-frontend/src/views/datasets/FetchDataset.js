@@ -61,7 +61,7 @@ function FetchDatasetListItem({ item, disableDownload }) {
 						onClick={async () => {
 							setDownloading(true);
 							const res = await fetch(
-								`http://localhost:5000/datasets/fetch/${item.fetchId}`,
+								`${process.env.REACT_APP_API_ENDPOINT_URL}/datasets/fetch/${item.fetchId}`,
 							);
 							if (res.status === 200) {
 								setDisabledState(true);

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Row, Col, Button, Input, message, Upload, Steps } from "antd";
+import { Row, Col, Button, Input, message, Upload, Steps, Alert } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
 
 import { useCreateDatasetMutation, useUpdateImagesMutation } from "../../redux/api";
@@ -31,8 +31,7 @@ function Datasets() {
 	const props = {
 		name: "file",
 		multiple: true,
-		// on localhost the backend is running on port 5000
-		action: `http://localhost:5000/datasets/${name}/images`,
+		action: `${process.env.REACT_APP_API_ENDPOINT_URL}/datasets/${name}/images`,
 		onChange(info) {
 			const { status } = info.file;
 			if (status !== "uploading") {
@@ -53,7 +52,7 @@ function Datasets() {
 		name: "file",
 		multiple: true,
 		// on localhost the backend is running on port 5000
-		action: `http://localhost:5000/datasets/${name}/transforms`,
+		action: `${process.env.REACT_APP_API_ENDPOINT_URL}/datasets/${name}/transforms`,
 		onChange(info) {
 			const { status } = info.file;
 			if (status !== "uploading") {
@@ -107,6 +106,7 @@ function Datasets() {
 			<Row>
 				<Col span={24}>
 					<h1>New Dataset</h1>
+					<Alert>For the colmap file, please use the format used for Instant-NGP</Alert>
 				</Col>
 			</Row>
 			<Row>

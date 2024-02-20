@@ -14,6 +14,12 @@ export async function loadDatasetIntoTemporaryDirectory(modelId, datasetId) {
 	console.log("Creating tmp dir");
 	const tmpDir = tmpDirForModelRun(modelId);
 
+	mkdirSync(tmpDir, {
+		recursive: true,
+		mode: 0o777,
+	});
+	chmodSync(tmpDir, 0o777);
+
 	console.log("Loading dataset into temporary directory");
 	await loadDatasetFilesRecursive(datasetId, path.join(tmpDir, "data"));
 }
@@ -29,7 +35,7 @@ async function loadDatasetFilesRecursive(basedir, tmpDir) {
 
 	const { data: dirContents } = await supabase.storage
 		.from("datasets")
-		.list(basedir);
+		.list(basedir, {limit: 10000});
 
 	for (const element of dirContents) {
 		if (element.id === null) {
@@ -66,7 +72,12 @@ export function runModel(config, datasetId) {
 
 	const info = JSON.parse(
 		readFileSync(
-			path.join(tmpDirForModelRun(config.modelId), "data", datasetId, "info.json"),
+			path.join(
+				tmpDirForModelRun(config.modelId),
+				"data",
+				datasetId,
+				"info.json",
+			),
 		).toString("utf-8"),
 	);
 
@@ -88,7 +99,9 @@ export function exportModel(config, datasetId) {
 	const tmpDir = tmpDirForModelRun(config.modelId);
 
 	const info = JSON.parse(
-		readFileSync(path.join(tmpDir, "data", datasetId, "info.json")).toString("utf-8"),
+		readFileSync(path.join(tmpDir, "data", datasetId, "info.json")).toString(
+			"utf-8",
+		),
 	);
 
 	const exportCommand = config.exportCmdFn(datasetId);
