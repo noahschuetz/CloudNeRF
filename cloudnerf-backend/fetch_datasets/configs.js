@@ -61,5 +61,7 @@ export const fetchDatasetConfigs = [
 			["floating-tree", "data/nerfstudio/floating-tree"],
 			["aspen", "data/nerfstudio/aspen"],
 		],
+		description: "Downloaded via nerfstudio bundle",
+		datasetType: "nerfstudio-data",
 	},
 ];
