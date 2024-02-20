@@ -6,7 +6,7 @@ function Datasets() {
 	const { data } = useGetDatasetsQuery();
 	const [deleteDataset] = useDeleteDatasetMutation();
 
-    console.log(data)
+	console.log(data);
 
 	return (
 		<>
@@ -49,10 +49,17 @@ function Datasets() {
 								]}
 							>
 								<List.Item.Meta
-									title={`${item.name} -  Images: ${item.images}`}
-									description={`${
-										item.description
-									} - Compatible models: ${item.compatible_models.join(", ")}`}
+									title={
+										<>
+											{item.name}{" "}
+											<span
+												style={{ color: "gray", fontWeight: "lighter", fontSize: 12 }}
+											>
+												{item.images} images
+											</span>
+										</>
+									} // {`${item.name} -  Images: ${item.images}`}
+									description={`${item.description} - Dataset type: ${item.datasetType}`}
 								/>
 							</List.Item>
 						)}

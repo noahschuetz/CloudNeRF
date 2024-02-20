@@ -1,5 +1,12 @@
 import { spawn } from "child_process";
-import { readFileSync, mkdirSync, readdirSync, rmdirSync, chmodSync } from "fs";
+import {
+	readFileSync,
+	mkdirSync,
+	readdirSync,
+	rmdirSync,
+	chmodSync,
+	lstatSync,
+} from "fs";
 import { supabase } from "../supabaseClient.js";
 import path from "path";
 import { pipeOutputOfChildProcess } from "../run_models/utils.js";
@@ -14,11 +21,12 @@ export function downloadDataset(config) {
 	console.log(
 		`Starting download (cmd: ${config.cmd}, args: ${config.cmdArgs})`,
 	);
+
 	// const downloadProcess = spawn(config.cmd, config.cmdArgs, {
 	// 	shell: true, // windows
 	// });
 
-	const downloadProcess = spawn("ls")
+	const downloadProcess = spawn("ls");
 
 	pipeOutputOfChildProcess(downloadProcess, `downloading ${config.fetchId}`);
 
@@ -34,47 +42,57 @@ export async function uploadDatasetsToSupabase(config) {
 	}
 
 	for (const dsPath of config.datasetPaths) {
-		const dataDir = path.join(tmpDirForDatasetFetching(config), dsPath[1]);
-		const transformsDir = path.join(
-			tmpDirForDatasetFetching(config),
-			dsPath[2],
-		);
-		const datasetId = dsPath[0];
+		const [datasetId, datasetPath] = dsPath;
 
-		console.log("Uploading images");
+		const basedir = path.join(tmpDirForDatasetFetching(config), datasetPath);
 
-		for (const filename of readdirSync(dataDir)) {
-			const content = readFileSync(path.join(dataDir, filename));
-			await supabase.storage
-				.from("datasets")
-				.upload(`${datasetId}/images/${filename}`, content)
-				.then((data, error) => {
-					if (error) {
-						console.log("error", error);
-						res.status(500).send("error");
-					}
-					console.log("supabase response", data);
-				});
-		}
+		const metadata = { numImages: 0 };
 
-		let transformsJson = readFileSync(transformsDir).toString("utf-8");
-		transformsJson = fixTransformsJson(transformsJson);
-		await supabase.storage
-			.from("datasets")
-			.upload(`${datasetId}/transforms.json`, transformsJson)
-			.then((data, error) => {
-				if (error) {
-					console.log("error", error);
-					res.status(500).send("error");
-				}
-				console.log("supabase response", data);
-			});
+		await uploadRecursiveToSupabase(basedir, "", datasetId, metadata);
+
+		console.log(metadata);
+
+		// const dataDir = path.join(tmpDirForDatasetFetching(config), dsPath[1]);
+		// const transformsDir = path.join(
+		// 	tmpDirForDatasetFetching(config),
+		// 	dsPath[2],
+		// );
+		// const datasetId = dsPath[0];
+
+		// console.log("Uploading images");
+
+		// for (const filename of readdirSync(dataDir)) {
+		// 	const content = readFileSync(path.join(dataDir, filename));
+		// 	await supabase.storage
+		// 		.from("datasets")
+		// 		.upload(`${datasetId}/images/${filename}`, content)
+		// 		.then((data, error) => {
+		// 			if (error) {
+		// 				console.log("error", error);
+		// 				res.status(500).send("error");
+		// 			}
+		// 			console.log("supabase response", data);
+		// 		});
+		// }
+
+		// let transformsJson = readFileSync(transformsDir).toString("utf-8");
+		// transformsJson = fixTransformsJson(transformsJson);
+		// await supabase.storage
+		// 	.from("datasets")
+		// 	.upload(`${datasetId}/transforms.json`, transformsJson)
+		// 	.then((data, error) => {
+		// 		if (error) {
+		// 			console.log("error", error);
+		// 			res.status(500).send("error");
+		// 		}
+		// 		console.log("supabase response", data);
+		// 	});
 
 		const infoJson = JSON.stringify({
 			name: datasetId,
-			description: `Dataset ${datasetId} from ${config.fetchId} bundle`,
-			images: readdirSync(dataDir).length,
-			compatible_models: ["nerfacto", "neus", "instantngp"],
+			description: config.description,
+			images: metadata.numImages,
+			datasetType: config.datasetType,
 			dataset_bundle: config.fetchId,
 		});
 		await supabase.storage
@@ -85,9 +103,46 @@ export async function uploadDatasetsToSupabase(config) {
 					console.log("error", error);
 					res.status(500).send("error");
 				}
-				console.log("supabase response", data);
 			});
 	}
+}
+
+async function uploadRecursiveToSupabase(
+	basedir,
+	bucketPath,
+	datasetId,
+	metadata,
+) {
+	const currentPath = path.join(basedir, bucketPath);
+	for (const element of readdirSync(currentPath)) {
+		const stats = lstatSync(path.join(currentPath, element));
+		if (stats.isDirectory()) {
+			await uploadRecursiveToSupabase(
+				basedir,
+				path.join(bucketPath, element),
+				datasetId,
+				metadata,
+			);
+		} else if (stats.isFile()) {
+			if ([".png", ".jpg", ".jpeg"].includes(element.split(".").at(-1))) {
+				metadata.numImages += 1;
+			}
+			const fileBuffer = readFileSync(path.join(currentPath, element));
+			await supabase.storage
+				.from("datasets")
+				.upload(`${datasetId}/${bucketPath}/${element}`, fileBuffer)
+				.then((data, error) => {
+					if (error) {
+						console.log("error", error);
+						res.status(500).send("error");
+					}
+				});
+		} else {
+			console.error("Encountered unexpected file type");
+		}
+	}
+
+	return metadata;
 }
 
 export function fixTransformsJson(transformsJson) {

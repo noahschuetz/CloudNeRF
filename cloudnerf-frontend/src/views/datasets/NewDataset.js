@@ -15,7 +15,7 @@ const steps = [
 		title: "Upload Images or Video",
 	},
 	{
-		title: "Upload transform.json (optional)",
+		title: "Upload transform.json",
 	},
 ];
 
@@ -83,7 +83,7 @@ function Datasets() {
 		const dataset = {
 			name: name,
 			description: description,
-			compatible_models: compatible_models,
+			datasetType: "instant-ngp-data",
 			images: images,
 		};
 		const { data, error } = await createDataset(dataset);
