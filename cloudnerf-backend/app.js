@@ -20,7 +20,7 @@ import {
 	installModel,
 	loadDatasetIntoTemporaryDirectory,
 	runModel,
-	exportModel
+	exportModel,
 } from "./run_models/utils.js";
 import { runModelsConfigs } from "./run_models/configs.js";
 import { spawnSync } from "child_process";
@@ -31,11 +31,7 @@ config();
 const app = express();
 const port = 5000;
 
-app.use(
-	cors({
-		origin: "http://localhost:3000",
-	}),
-);
+app.use(cors());
 
 app.use(morgan("short"));
 
@@ -388,7 +384,7 @@ app.get("/models/run/:modelId/:datasetId", async (req, res) => {
 	const { modelId, datasetId } = req.params;
 	const config = runModelsConfigs.filter((c) => c.modelId === modelId)[0];
 	await loadDatasetIntoTemporaryDirectory(modelId, datasetId);
-	
+
 	const trainingProcess = runModel(config, datasetId);
 
 	trainingProcess.once("close", () => {
