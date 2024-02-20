@@ -31,7 +31,6 @@ function Datasets() {
 	const props = {
 		name: "file",
 		multiple: true,
-		// on localhost the backend is running on port 5000
 		action: `${process.env.REACT_APP_API_ENDPOINT_URL}/datasets/${name}/images`,
 		onChange(info) {
 			const { status } = info.file;
