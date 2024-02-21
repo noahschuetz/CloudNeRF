@@ -15,10 +15,11 @@ function Evaluations() {
     const [rightSceneMeshUrl, setRightSceneMeshUrl] = useState("");
     const [leftSceneItem, setLeftSceneItem] = useState("");
     const [rightSceneItem, setRightSceneItem] = useState("");
+
     const handleDownloadClick = (name) => {
 
         // process.env.REACT_APP_API_ENDPOINT_URL/results/${name}/meshUrl provides the mesh url
-        fetch(`process.env.REACT_APP_API_ENDPOINT_URL/results/${name}/meshUrl`)
+        fetch(`${process.env.REACT_APP_API_ENDPOINT_URL}/results/${name}/meshUrl`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -44,7 +45,7 @@ function Evaluations() {
         console.log(item);
 
         // process.env.REACT_APP_API_ENDPOINT_URL/results/${name}/meshUrl provides the mesh url
-        fetch(`process.env.REACT_APP_API_ENDPOINT_URL/results/${name}/meshUrl`)
+        fetch(`${process.env.REACT_APP_API_ENDPOINT_URL}/results/${name}/meshUrl`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -81,7 +82,7 @@ function Evaluations() {
         console.log(item);
 
         // process.env.REACT_APP_API_ENDPOINT_URL/results/${name}/meshUrl provides the mesh url
-        fetch(`process.env.REACT_APP_API_ENDPOINT_URL/results/${name}/meshUrl`)
+        fetch(`${process.env.REACT_APP_API_ENDPOINT_URL}/results/${name}/meshUrl`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
