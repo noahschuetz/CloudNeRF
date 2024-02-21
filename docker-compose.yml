@@ -4,9 +4,35 @@
 #   Stop:           docker compose down
 #   Destroy:        docker compose -f docker-compose.yml -f ./dev/docker-compose.dev.yml down -v --remove-orphans
 
-name: supabase
+name: cloudnerf
 version: "3.8"
 services:
+
+  gpu-api:
+    container_name: cloudnerf-gpu-api
+    image: cloudnerf/gpu-api
+    build:
+      context: cloudnerf-backend
+      dockerfile: ./Dockerfile
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - SUPABASE_URL: http://kong:8000
+      - SUPABASE_KEY: ${SERVICE_ROLE_KEY}
+      - MESH_RESULTS_DIR_NAME: ${MESH_RESULTS_DIR_NAME}
+    ports:
+      - 5000:5000
+
+  app:
+    container_name: cloudnerf-app
+    image: cloudnerf/app
+    build:
+      context: cloudnerf-frontend
+      dockerfile: ./Dockerfile
+    environment:
+      - REACT_APP_API_ENDPOINT_URL: ${REACT_APP_API_ENDPOINT_URL}
+    ports:
+      - 3000:3000
 
   studio:
     container_name: cloudnerf-studio
