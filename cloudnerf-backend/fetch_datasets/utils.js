@@ -52,8 +52,6 @@ export async function uploadDatasetsToSupabase(config) {
 		await uploadInfoJson(datasetId, config, metadata.numImages)
 
 		console.log(`Finished uploading ${datasetId} of ${config.fetchId}. Found ${metadata.numImages} images`)
-
-		break
 	}
 }
 
