@@ -44,7 +44,7 @@ export default function Models() {
 						placeholder="Select a model"
 						style={{ width: 120, marginLeft: 10, marginRight: 10 }}
 						onChange={(value) => setSelectedModel(value)}
-						options={models}
+						options={models?.filter((mc) => dockerImages.includes(mc.dockerImage))}
 					/>
 					<Button
 						style={{ width: 120, marginLeft: 10 }}
@@ -120,7 +120,7 @@ function ModelListItem({ item, installedInitally }) {
 						onClick={async () => {
 							setInstalling(true);
 							const res = await fetch(
-								`process.env.REACT_APP_API_ENDPOINT_URL/models/install/${item.modelId}`,
+								`${process.env.REACT_APP_API_ENDPOINT_URL}/models/install/${item.modelId}`,
 							);
 							if (res.status === 200){
 								setInstalled(true)
