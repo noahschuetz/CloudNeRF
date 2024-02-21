@@ -17,6 +17,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
+      - ROOT_DIR: "/app"
       - SUPABASE_URL: http://kong:8000
       - SUPABASE_KEY: ${SERVICE_ROLE_KEY}
       - MESH_RESULTS_DIR_NAME: ${MESH_RESULTS_DIR_NAME}
