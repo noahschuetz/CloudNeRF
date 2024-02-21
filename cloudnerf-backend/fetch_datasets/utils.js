@@ -22,11 +22,11 @@ export function downloadDataset(config) {
 		`Starting download (cmd: ${config.cmd}, args: ${config.cmdArgs})`,
 	);
 
-	// const downloadProcess = spawn(config.cmd, config.cmdArgs, {
-	// 	shell: true, // windows
-	// });
+	const downloadProcess = spawn(config.cmd, config.cmdArgs, {
+		shell: true, // windows
+	});
 
-	const downloadProcess = spawn("ls");
+	// const downloadProcess = spawn("ls");
 
 	pipeOutputOfChildProcess(downloadProcess, `downloading ${config.fetchId}`);
 
@@ -49,61 +49,11 @@ export async function uploadDatasetsToSupabase(config) {
 		const metadata = { numImages: 0 };
 
 		await uploadRecursiveToSupabase(basedir, "", datasetId, metadata);
+		await uploadInfoJson(datasetId, config, metadata.numImages)
 
-		console.log(metadata);
+		console.log(`Finished uploading ${datasetId} of ${config.fetchId}. Found ${metadata.numImages} images`)
 
-		// const dataDir = path.join(tmpDirForDatasetFetching(config), dsPath[1]);
-		// const transformsDir = path.join(
-		// 	tmpDirForDatasetFetching(config),
-		// 	dsPath[2],
-		// );
-		// const datasetId = dsPath[0];
-
-		// console.log("Uploading images");
-
-		// for (const filename of readdirSync(dataDir)) {
-		// 	const content = readFileSync(path.join(dataDir, filename));
-		// 	await supabase.storage
-		// 		.from("datasets")
-		// 		.upload(`${datasetId}/images/${filename}`, content)
-		// 		.then((data, error) => {
-		// 			if (error) {
-		// 				console.log("error", error);
-		// 				res.status(500).send("error");
-		// 			}
-		// 			console.log("supabase response", data);
-		// 		});
-		// }
-
-		// let transformsJson = readFileSync(transformsDir).toString("utf-8");
-		// transformsJson = fixTransformsJson(transformsJson);
-		// await supabase.storage
-		// 	.from("datasets")
-		// 	.upload(`${datasetId}/transforms.json`, transformsJson)
-		// 	.then((data, error) => {
-		// 		if (error) {
-		// 			console.log("error", error);
-		// 			res.status(500).send("error");
-		// 		}
-		// 		console.log("supabase response", data);
-		// 	});
-
-		const infoJson = JSON.stringify({
-			name: datasetId,
-			description: config.description,
-			images: metadata.numImages,
-			datasetType: config.datasetType,
-			dataset_bundle: config.fetchId,
-		});
-		await supabase.storage
-			.from("datasets")
-			.upload(`${datasetId}/info.json`, infoJson)
-			.then((data, error) => {
-				if (error) {
-					console.log("error", error);
-					res.status(500).send("error");
-				}
-			});
+		break
 	}
 }
 
@@ -124,7 +74,7 @@ async function uploadRecursiveToSupabase(
 				metadata,
 			);
 		} else if (stats.isFile()) {
-			if ([".png", ".jpg", ".jpeg"].includes(element.split(".").at(-1))) {
+			if (["png", "jpg", "jpeg"].includes(element.split(".").at(-1).toLowerCase())) {
 				metadata.numImages += 1;
 			}
 			const fileBuffer = readFileSync(path.join(currentPath, element));
@@ -143,6 +93,25 @@ async function uploadRecursiveToSupabase(
 	}
 
 	return metadata;
+}
+
+async function uploadInfoJson(datasetId, config, numImages){
+	const infoJson = JSON.stringify({
+		name: datasetId,
+		description: config.description,
+		images: numImages,
+		datasetType: config.datasetType,
+		dataset_bundle: config.fetchId,
+	});
+	await supabase.storage
+		.from("datasets")
+		.upload(`${datasetId}/info.json`, infoJson)
+		.then((data, error) => {
+			if (error) {
+				console.log("error", error);
+				res.status(500).send("error");
+			}
+		});
 }
 
 export function fixTransformsJson(transformsJson) {
