@@ -106,7 +106,7 @@ function Datasets() {
 			<Row>
 				<Col span={24}>
 					<h1>New Dataset</h1>
-					<Alert>For the colmap file, please use the format used for Instant-NGP</Alert>
+					<Alert message={<>For the colmap file, please use the format used for <a href="https://github.com/NVlabs/instant-ngp/blob/master/docs/nerf_dataset_tips.md">Instant-NGP</a></>} type="warning" style={{marginBottom: 20}}/>
 				</Col>
 			</Row>
 			<Row>
