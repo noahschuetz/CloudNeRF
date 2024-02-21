@@ -53,9 +53,9 @@ async function loadDatasetFilesRecursive(basedir, tmpDir) {
 
 export function installModel(config) {
 	console.log("Installing docker image for model...");
-	console.log(config.installCmd, config.installCmdArgs.join(" "));
+	console.log(config.installCmd.join(" "));
 
-	const installProcess = spawn(config.installCmd, config.installCmdArgs, {
+	const installProcess = spawn(config.installCmd[0], config.installCmd.slice(1), {
 		shell: true, // for windows
 	});
 
@@ -88,6 +88,8 @@ export function runModel(config, datasetId) {
 		shell: true, // for windows
 	});
 
+	// const trainingProcess = spawn("ls")
+
 	pipeOutputOfChildProcess(trainingProcess, `training model ${config.modelId}`);
 
 	return trainingProcess;
@@ -112,18 +114,31 @@ export function exportModel(config, datasetId) {
 		shell: true, //windows
 	});
 
+	// const exportProcess = spawn("ls")
+
 	exportProcess.once("close", async () => {
-		const resultFiles = readdirSync(
-			join(tmpDir, process.env.MESH_RESULTS_DIR_NAME),
-		);
-		for (const rf of resultFiles) {
-			const content = readFileSync(
-				join(tmpDir, process.env.MESH_RESULTS_DIR_NAME, rf),
-			);
-			await supabase.storage
-				.from("results")
-				.upload(`${config.modelId}-${datasetId}/${rf}`, content);
+		console.log("Creating results bucket")
+		const bucket = await supabase.storage.createBucket("results");
+		console.log("Bucket:", bucket);
+		if (bucket.error) {
+			console.log(bucket.error.message);
 		}
+
+		const meshId = `${config.modelId}__${datasetId}`
+
+		const meshContent = readFileSync(
+			join(tmpDir, process.env.MESH_RESULTS_DIR_NAME, config.exportedMeshFile),
+		);
+		console.log(`Uploading ${config.exportedMeshFile}`)
+		await supabase.storage
+			.from("results")
+			.upload(`${meshId}/mesh/${config.exportedMeshFile}`, meshContent);
+
+		console.log("Uploading info.json")
+		const infoContent= JSON.stringify({name: `${meshId}`})
+		await supabase.storage
+			.from("results")
+			.upload(`${meshId}/info.json`, infoContent);
 	});
 
 	pipeOutputOfChildProcess(exportProcess, `exporting model ${config.modelId}`);
