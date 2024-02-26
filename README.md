@@ -34,5 +34,5 @@ _optional:_
 ### Notes
 
 - When running a model nothing happens. One has to check the logs of the express server to check the process. Process is finished (maybe it failed) when the message "FINISHED exporting model {{ MODEL NAME }}" appears in the console.
-  - Logs can be checked either via Portainer (see above) or by following the logs of the API server, e.g. `dpocker compose logs --follow gpu-api` 
+  - Logs can be checked either via Portainer (see above) or by following the logs of the API server, e.g. `docker compose logs --follow gpu-api` 
 - The 3d viewer does not show the results because the camera might not point to the object
