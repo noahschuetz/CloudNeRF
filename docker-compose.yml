@@ -17,10 +17,10 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - ROOT_DIR: "/app"
-      - SUPABASE_URL: http://kong:8000
-      - SUPABASE_KEY: ${SERVICE_ROLE_KEY}
-      - MESH_RESULTS_DIR_NAME: ${MESH_RESULTS_DIR_NAME}
+      ROOT_DIR: "/app"
+      SUPABASE_URL: http://kong:8000
+      SUPABASE_KEY: ${SERVICE_ROLE_KEY}
+      MESH_RESULTS_DIR_NAME: ${MESH_RESULTS_DIR_NAME}
     ports:
       - 5000:5000
 
@@ -31,7 +31,7 @@ services:
       context: cloudnerf-frontend
       dockerfile: ./Dockerfile
     environment:
-      - REACT_APP_API_ENDPOINT_URL: ${REACT_APP_API_ENDPOINT_URL}
+      REACT_APP_API_ENDPOINT_URL: ${REACT_APP_API_ENDPOINT_URL}
     ports:
       - 3000:3000
 
