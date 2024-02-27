@@ -172,7 +172,6 @@ app.get("/models/docker_images", async (req, res) => {
 			.slice(0, -1)
 			.join(",")}]`,
 	);
-	console.log({dockerImagesInfo})
 	const dockerImages = dockerImagesInfo.map((di) => di.Repository);
 	console.log({dockerImages})
 	res.json(dockerImages);

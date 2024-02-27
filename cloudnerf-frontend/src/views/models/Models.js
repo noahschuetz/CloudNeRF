@@ -39,13 +39,19 @@ export default function Models() {
 						onChange={(value) => setSelectedDataset(value)}
 						options={datasets}
 					/>
-					Model:
-					<Select
-						placeholder="Select a model"
-						style={{ width: 120, marginLeft: 10, marginRight: 10 }}
-						onChange={(value) => setSelectedModel(value)}
-						options={models?.filter((mc) => dockerImages.includes(mc.dockerImage))}
-					/>
+					Model:{" "}
+					{dockerImages ? (
+						<Select
+							placeholder="Select a model"
+							style={{ width: 120, marginLeft: 10, marginRight: 10 }}
+							onChange={(value) => setSelectedModel(value)}
+							options={models?.filter((mc) =>
+								dockerImages.includes(mc.dockerImage),
+							)}
+						/>
+					) : (
+						<Spin />
+					)}
 					<Button
 						style={{ width: 120, marginLeft: 10 }}
 						type="primary"
@@ -122,9 +128,9 @@ function ModelListItem({ item, installedInitally }) {
 							const res = await fetch(
 								`${process.env.REACT_APP_API_ENDPOINT_URL}/models/install/${item.modelId}`,
 							);
-							if (res.status === 200){
-								setInstalled(true)
-								setInstalling(false)
+							if (res.status === 200) {
+								setInstalled(true);
+								setInstalling(false);
 							}
 						}}
 						disabled={installed}
