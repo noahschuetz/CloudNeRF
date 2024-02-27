@@ -1,5 +1,3 @@
-import { spawnSync } from "child_process";
-
 //3rdparty
 import express from "express";
 import morgan from "morgan";
