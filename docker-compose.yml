@@ -18,7 +18,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:rw
       - ${ROOT_DIR}:${ROOT_DIR}
     environment:
-      ROOT_DIR: "/app"
+      ROOT_DIR: ${ROOT_DIR}:${ROOT_DIR}
       SUPABASE_URL: http://kong:8000
       SUPABASE_KEY: ${SERVICE_ROLE_KEY}
       MESH_RESULTS_DIR_NAME: ${MESH_RESULTS_DIR_NAME}
