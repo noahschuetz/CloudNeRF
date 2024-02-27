@@ -2,8 +2,6 @@ import {
 	chmodSync,
 	mkdirSync,
 	readFileSync,
-	readdirSync,
-	writeFileSync,
 } from "fs";
 import path, { join } from "path";
 import { supabase } from "../supabaseClient.js";
