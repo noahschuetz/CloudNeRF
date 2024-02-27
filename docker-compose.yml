@@ -16,6 +16,7 @@ services:
       dockerfile: ./Dockerfile
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:rw
+      - ${ROOT_DIR}:${ROOT_DIR}
     environment:
       ROOT_DIR: "/app"
       SUPABASE_URL: http://kong:8000
