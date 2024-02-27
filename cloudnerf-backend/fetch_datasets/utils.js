@@ -135,5 +135,7 @@ export function cleanUp(config) {
 }
 
 function tmpDirForDatasetFetching(config) {
-	return `${process.env.ROOT_DIR}/tmp/${config.fetchId}`;
+	const tmpDir = path.join(process.env.ROOT_DIR, "tmp", fetchId);
+	console.log(`Created tmp dir ${tmpDir}`)
+	return tmpDir;
 }

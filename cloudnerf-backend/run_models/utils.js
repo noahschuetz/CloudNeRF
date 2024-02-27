@@ -138,7 +138,9 @@ export function exportModel(config, datasetId) {
 }
 
 function tmpDirForModelRun(modelId) {
-	return path.join(process.env.ROOT_DIR, "tmp", modelId);
+	const tmpDir = path.join(process.env.ROOT_DIR, "tmp", modelId);
+	console.log(`Created tmp dir ${tmpDir}`)
+	return tmpDir;
 }
 
 export function pipeOutputOfChildProcess(process, id) {
