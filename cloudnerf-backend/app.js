@@ -1,3 +1,5 @@
+import { spawnSync } from "child_process";
+
 //3rdparty
 import express from "express";
 import morgan from "morgan";
@@ -167,7 +169,7 @@ app.get("/models/docker_images", async (req, res) => {
 			stderr: dockerImagesInfoJson.stderr,
 			output: dockerImagesInfoJson.output,
 			status: dockerImagesInfoJson.status,
-			error: dockerImagesInfoJson.error
+			error: dockerImagesInfoJson.error,
 		});
 		res.json([]);
 		return;
