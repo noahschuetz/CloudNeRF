@@ -15,7 +15,7 @@ services:
       context: cloudnerf-backend
       dockerfile: ./Dockerfile
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:rw
     environment:
       ROOT_DIR: "/app"
       SUPABASE_URL: http://kong:8000

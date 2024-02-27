@@ -160,20 +160,20 @@ app.get("/models/docker_images", async (req, res) => {
 		"--format",
 		"json",
 	]);
+	console.error({
+		stdout: dockerImagesInfoJson.stdout,
+		stderr: dockerImagesInfoJson.stderr,
+		output: dockerImagesInfoJson.output,
+		status: dockerImagesInfoJson.status,
+		error: dockerImagesInfoJson.error,
+	});
 	if (dockerImagesInfoJson.error) {
 		console.error("Failed to retrieve docker images! Returning empty list.");
-		console.error({
-			stdout: dockerImagesInfoJson.stdout,
-			stderr: dockerImagesInfoJson.stderr,
-			output: dockerImagesInfoJson.output,
-			status: dockerImagesInfoJson.status,
-			error: dockerImagesInfoJson.error,
-		});
 		res.json([]);
 		return;
 	}
 	const dockerImagesInfo = JSON.parse(
-		`[${dockerImagesInfoJson.split("\n").slice(0, -1).join(",")}]`,
+		`[${dockerImagesInfoJson.stdout.split("\n").slice(0, -1).join(",")}]`,
 	);
 	const dockerImages = dockerImagesInfo.map((di) => di.Repository);
 	res.json(dockerImages);
