@@ -1,6 +1,3 @@
-//native
-import { mkdirSync, readFileSync, unlink } from "fs";
-
 //3rdparty
 import express from "express";
 import morgan from "morgan";
@@ -10,7 +7,6 @@ import bodyParser from "body-parser";
 import { config } from "dotenv";
 
 //own
-import { supabase } from "./supabaseClient.js";
 import {
 	downloadDataset,
 	uploadDatasetsToSupabase,

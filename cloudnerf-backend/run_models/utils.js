@@ -88,8 +88,6 @@ export function runModel(config, datasetId) {
 		shell: true, // for windows
 	});
 
-	// const trainingProcess = spawn("ls")
-
 	pipeOutputOfChildProcess(trainingProcess, `training model ${config.modelId}`);
 
 	return trainingProcess;
@@ -114,12 +112,9 @@ export function exportModel(config, datasetId) {
 		shell: true, //windows
 	});
 
-	// const exportProcess = spawn("ls")
-
 	exportProcess.once("close", async () => {
 		console.log("Creating results bucket")
 		const bucket = await supabase.storage.createBucket("results");
-		console.log("Bucket:", bucket);
 		if (bucket.error) {
 			console.log(bucket.error.message);
 		}

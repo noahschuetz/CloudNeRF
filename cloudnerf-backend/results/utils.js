@@ -1,3 +1,6 @@
+import { supabase } from "../supabaseClient.js";
+import { mkdirSync, readFileSync, unlink } from "fs";
+
 export async function getResults(req, res) {
 	const { data, error } = await supabase.storage.from("results").list();
 

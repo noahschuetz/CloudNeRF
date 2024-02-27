@@ -1,3 +1,6 @@
+import { supabase } from "../supabaseClient.js";
+import { readFileSync, unlink } from "fs";
+
 export async function getDatasetsInfo() {
 	const { data, error } = await supabase.storage.from("datasets").list();
 
@@ -169,46 +172,6 @@ export async function postImagesToDataset(req, res) {
 			res.status(500).send("error");
 		}
 		console.log("datasets", data);
-
-		// // get how many images are in the folder
-		// const filelocationImages = `${id}/images`;
-		// const { data: images, error: imagesError } = await supabase.storage
-		// 	.from("datasets")
-		// 	.list(filelocationImages);
-
-		// if (imagesError) {
-		// 	console.log("error", imagesError);
-		// 	res.status(500).send("error");
-		// }
-		// console.log("images", images);
-
-		// // update the info.json file with the new about of images
-		// const { data: fileInfo, error: fileError } = await supabase.storage.from('datasets').download(`${id}/info.json`);
-
-		// if (fileError) {
-		// 	console.error(`Error downloading info.json from folder ${id}:`, fileError);
-		// }
-
-		// // Convert Blob to string
-		// const fileInfoText = await fileInfo.text();
-
-		// // Parse the JSON data
-		// const infoData = JSON.parse(fileInfoText);
-
-		// // Update the images count
-		// infoData.images = images.length;
-
-		// // Update the updated info.json file
-		// const { data: updatedInfo, error: updatedInfoError } = supabase.storage
-		// 	.from("datasets")
-		// 	.update(`${id}/info.json`, JSON.stringify(infoData), {
-		// 		contentType: "application/json",
-		// 	});
-
-		// if (updatedInfoError) {
-		// 	console.log("error", updatedInfoError);
-		// 	res.status(500).send("error");
-		// }
 
 		res.send(data);
 

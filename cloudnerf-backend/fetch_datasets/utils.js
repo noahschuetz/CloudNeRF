@@ -26,17 +26,14 @@ export function downloadDataset(config) {
 		shell: true, // windows
 	});
 
-	// const downloadProcess = spawn("ls");
-
 	pipeOutputOfChildProcess(downloadProcess, `downloading ${config.fetchId}`);
 
 	return downloadProcess;
 }
 
 export async function uploadDatasetsToSupabase(config) {
-	console.log("Creating bucket");
+	console.log("Creating bucket if not already exist");
 	const bucket = await supabase.storage.createBucket("datasets");
-	console.log("Bucket:", bucket);
 	if (bucket.error) {
 		console.log(bucket.error.message);
 	}
