@@ -167,6 +167,7 @@ app.get("/models/docker_images", async (req, res) => {
 			stderr: dockerImagesInfoJson.stderr,
 			output: dockerImagesInfoJson.output,
 			status: dockerImagesInfoJson.status,
+			error: dockerImagesInfoJson.error
 		});
 		res.json([]);
 		return;
