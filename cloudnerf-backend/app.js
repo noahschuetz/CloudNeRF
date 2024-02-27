@@ -159,7 +159,18 @@ app.get("/models/docker_images", async (req, res) => {
 		"images",
 		"--format",
 		"json",
-	]).stdout.toString();
+	]);
+	if (dockerImagesInfoJson.error) {
+		console.error("Failed to retrieve docker images! Returning empty list.");
+		console.error({
+			stdout: dockerImagesInfoJson.stdout,
+			stderr: dockerImagesInfoJson.stderr,
+			output: dockerImagesInfoJson.output,
+			status: dockerImagesInfoJson.status,
+		});
+		res.json([]);
+		return;
+	}
 	const dockerImagesInfo = JSON.parse(
 		`[${dockerImagesInfoJson.split("\n").slice(0, -1).join(",")}]`,
 	);
