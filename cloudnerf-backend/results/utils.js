@@ -41,7 +41,7 @@ export async function getResults(req, res) {
 
 export async function getMeshUrlOfResult(req, res) {
 	const { id } = req.params;
-	log("id", id);
+	conosole.log("id", id);
 
 	const { data: resultlist, resultlisterror } = await supabase.storage
 		.from("results")
@@ -56,7 +56,7 @@ export async function getMeshUrlOfResult(req, res) {
 	// log("filename", filename);
 
 	const pathtofile = `/${id}/mesh/${filename}`;
-	log("pathtofile", pathtofile);
+	console.log("pathtofile", pathtofile);
 
 	// const { data, error } = await supabase.storage.from("results").createSignedUrl('/test_name/mesh/placeholder.fbx', 60)
 	const { data, error } = await supabase.storage
