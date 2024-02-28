@@ -1,8 +1,16 @@
 # CloudNeRF Documentation
 
-Welcome to CloudNeRF, a cutting-edge platform designed for efficient neural radiance field processing in cloud environments. This documentation provides comprehensive guidance on setting up and using CloudNeRF, ensuring a seamless experience for users aiming to leverage neural radiance fields in their projects.
+Welcome to CloudNeRF, a cutting-edge platform designed for efficient neural radiance field processing in cloud environments. This documentation provides comprehensive guidance on setting up and using CloudNeRF, ensuring a seamless experience for users aiming to leverage mesh creation with neural radiance fields in their projects.
 
 ## Getting Started
+
+1. First make sure that your machine meets the hard- and software requirements mentioned below.
+2. Then follow the setup instructions by providing the correct environment variables for your system.
+3. Run `docker compose up -d`
+4. UI will be exposed at port 3000. Connect either via http://localhost:3000 or https://your-qualified-domain-name.tld. For production builds we recommend exposing the UI through a proxy server such as nginx
+5. (optional) Inspect logs of the background processes triggered by the UI with `docker compose logs --follow gpu-api`  
+
+## Requirements
 
 To begin using CloudNeRF, ensure that your system meets the following hardware and software requirements.
 
@@ -29,16 +37,20 @@ To begin using CloudNeRF, ensure that your system meets the following hardware a
 - Portainer: An optional tool that facilitates container management, allowing users to monitor running containers and inspect logs. This is particularly useful for tracking model runs. \
 [Installation Guide](https://docs.portainer.io/start/install-ce/server/docker/linux)
 
-## Setup Instructions
-
-### Environment Files
+## Setup environment files
 
 1. Rename `./CloudNeRF/.env.example` to `.env`.
 1. Provide the following env variables:
     - `REACT_APP_API_ENDPOINT_URL`: URL to the server hosting the express server, typically http://localhost:5000 for local setups. For remote servers, use the public IP or domain name, ensuring port 5000 is accessible.
     - `ROOT_DIR`: absolute path to the project root. E.g. `/home/ubuntu/CloudNeRF`
 
-### Operational Notes
+## Open To-Do's
 
-- Model Execution: To monitor a model's execution, refer to the express server logs. The process is deemed complete upon the appearance of the message "FINISHED exporting model {{ MODEL NAME }}" in the console. Logs can be accessed through Portainer or by executing `docker compose logs --follow gpu-api` to follow the API server logs.
-- 3D Viewer: The 3d viewer does not show the results because the camera might not point to the object. You can verify the mesh was created by downloading it and seeing it in a online [3D viewer](https://3dviewer.net/)
+- [ ] Show model training process in UI
+  - For now, to monitor a model's execution, refer to the express server logs. The process is deemed complete upon the appearance of the message "FINISHED exporting model {{ MODEL NAME }}" in the console. Logs can be accessed through Portainer or by executing `docker compose logs --follow gpu-api` to follow the API server logs.
+- [ ] Identify correct camera poses in 3d viewer
+  - The 3d viewer does not show the results because the camera might not point to the object. You can verify the mesh was created by downloading it and seeing it in a online [3D viewer](https://3dviewer.net/)
+- [ ] Delete temporary directories
+  - We have disabled this feature because this project is still under development and being able to inspect temporary directories facilitates debugging. These should be abviously be deleted in a production version.
+- [ ] Improve error feedback to user
+  - When training NeRF we ran into a myriad of problems while setting them up. Since users of the app shouldn't have to inspect the server logs to find out what caused errors in their model, it's highly important to provide exhaustive error feedback inside the UI
