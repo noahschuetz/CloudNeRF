@@ -41,7 +41,7 @@ export async function getResults(req, res) {
 
 export async function getMeshUrlOfResult(req, res) {
 	const { id } = req.params;
-	conosole.log("id", id);
+	console.log("id", id);
 
 	const { data: resultlist, resultlisterror } = await supabase.storage
 		.from("results")
