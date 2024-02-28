@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 // import TwoScenes from './ThreeScene';
-import {Row, Col, List, Button} from 'antd';
+import {Row, Col, List, Button, Alert} from 'antd';
 import ThreeScene from './ThreeScene';
 
 import { useGetResultsQuery} from '../../redux/api';
@@ -158,7 +158,16 @@ function Evaluations() {
             <Row style={{marginTop: "2rem"}}>
                 <Col span={24}>
                     <h3>Evaluate results in 3D</h3>
-
+                    
+                    <Alert message={
+					<>It may happen, that your mesh doesn't load. 
+					This is not an issue with the generated mesh, 
+					but rather an issue with the camera positioning
+					of the 3D scene. Until that issue is fixed, you 
+					may see your mesh using 3rd party tools, e.g the
+					<a href="https://3dviewer.net/">3D Viewer</a>.
+					We are sorry for the inconvinience. 
+					</>} type="error" style={{marginBottom: 20}}/>
                     <div id='three-scene-container'>
                     </div>
                     
