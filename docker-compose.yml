@@ -4,15 +4,35 @@
 #   Stop:           docker compose down
 #   Destroy:        docker compose -f docker-compose.yml -f ./dev/docker-compose.dev.yml down -v --remove-orphans
 
-name: CloudNeRF
+name: cloudnerf
 version: "3.8"
 services:
 
-  nextjs:
-    container_name: cloudnerf-nextjs
-    build: 
-      context: ./cloudnerf-nextjs
-      dockerfile: Dockerfile
+  gpu-api:
+    container_name: cloudnerf-gpu-api
+    image: cloudnerf/gpu-api
+    build:
+      context: cloudnerf-backend
+      dockerfile: ./Dockerfile
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:rw
+      - ${ROOT_DIR}:${ROOT_DIR}
+    environment:
+      ROOT_DIR: ${ROOT_DIR}
+      SUPABASE_URL: http://kong:8000
+      SUPABASE_KEY: ${SERVICE_ROLE_KEY}
+      MESH_RESULTS_DIR_NAME: ${MESH_RESULTS_DIR_NAME}
+    ports:
+      - 5000:5000
+
+  app:
+    container_name: cloudnerf-app
+    image: cloudnerf/app
+    build:
+      context: cloudnerf-frontend
+      dockerfile: ./Dockerfile
+    environment:
+      REACT_APP_API_ENDPOINT_URL: ${REACT_APP_API_ENDPOINT_URL}
     ports:
       - 3000:3000
 
@@ -233,7 +253,7 @@ services:
       POSTGREST_URL: http://rest:3000
       PGRST_JWT_SECRET: ${JWT_SECRET}
       DATABASE_URL: postgres://supabase_storage_admin:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
-      FILE_SIZE_LIMIT: 52428800
+      FILE_SIZE_LIMIT: ${STORAGE_FILE_SIZE_LIMIT}
       STORAGE_BACKEND: file
       FILE_STORAGE_BACKEND_PATH: /var/lib/storage
       TENANT_ID: stub

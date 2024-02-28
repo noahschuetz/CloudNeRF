@@ -1,0 +1,3 @@
+FROM nerfstudio/nerfstudio:latest
+
+RUN pip install git+https://github.com/Giodiro/kplanes_nerfstudio.git
